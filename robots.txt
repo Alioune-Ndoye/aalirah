@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block sensitive directories from crawling
+Disallow: /config/
+Disallow: /node_modules/
+Disallow: /design.md/
+
+# Sitemap location — update domain when going live
+Sitemap: https://www.auracleaning.com/sitemap.xml

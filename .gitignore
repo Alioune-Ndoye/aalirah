@@ -1,0 +1,26 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Next.js build output
+/.next/
+
+# Environment / secrets
+.env
+.env.*
+config/secrets.php
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Design docs (nested git repo)
+design.md
+
+# Claude internal
+.claude/
