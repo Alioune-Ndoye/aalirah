@@ -9,8 +9,8 @@ export const site = {
   desc:
     'Professional cleaning services for homes and businesses in West Hartford, CT. Eco-certified products, background-checked team, 100% satisfaction guarantee.',
   email: 'hello@aliraah.com',
-  phone: '+1 (860) 555-0190',
-  phoneRaw: '+18605550190',
+  phone: '+1 (860) 895-0233',
+  phoneRaw: '+18608950233',
   address: 'Prospect Ave, West Hartford, CT',
   hours: 'Mon–Sat, 7am–7pm ET',
   city: 'West Hartford',
