@@ -2,9 +2,16 @@
 .env
 .env.*
 !.env.example
-!.env.local.example
+
+# Dependencies
 node_modules/
-config/secrets.php
+
+# Build output
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+*.local
 
 # OS
 .DS_Store
