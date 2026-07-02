@@ -135,6 +135,30 @@ export async function updateCustomer(token: string, id: string, patch: Partial<A
   return data.customer || null;
 }
 
+export type SiteSettingsPatch = { showGuarantee?: boolean; showSpecials?: boolean };
+
+/** Fresh (uncached) read of the public site settings, for the admin UI. */
+export async function getSiteSettings(): Promise<Required<SiteSettingsPatch> | null> {
+  const res = await fetch(`${API_URL}/api/settings`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.settings ?? null;
+}
+
+export async function updateSiteSettings(
+  token: string,
+  patch: SiteSettingsPatch
+): Promise<{ showGuarantee: boolean; showSpecials: boolean } | null> {
+  const res = await fetch(`${API_URL}/api/settings`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.settings ?? null;
+}
+
 /** Download the bookings CSV (protected endpoint → fetch with auth, then save). */
 export async function downloadBookingsCsv(token: string): Promise<void> {
   const res = await fetch(`${API_URL}/api/bookings/export.csv`, { headers: auth(token) });

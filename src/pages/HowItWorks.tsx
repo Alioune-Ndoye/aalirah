@@ -6,8 +6,10 @@ import Seo, { JsonLd } from '../components/Seo';
 import { meta, breadcrumbLd } from '../lib/seo';
 import { processSteps } from '../lib/data';
 import { site } from '../lib/site';
+import { useSiteSettings } from '../lib/settingsStore';
 
 export default function HowItWorks() {
+  const settings = useSiteSettings();
   return (
     <>
       <Seo {...meta.howItWorks} />
@@ -56,7 +58,13 @@ export default function HowItWorks() {
               <Icon name="arrow" size={14} strokeWidth={2} />
             </Link>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 16 }}>
-              Backed by our <Link to="/guarantee" style={{ color: 'var(--mint-dark)', fontWeight: 600 }}>100% satisfaction guarantee</Link>. Serving {site.city}, {site.state} & beyond.
+              Backed by our{' '}
+              {settings.showGuarantee ? (
+                <Link to="/guarantee" style={{ color: 'var(--mint-dark)', fontWeight: 600 }}>100% satisfaction guarantee</Link>
+              ) : (
+                <strong style={{ color: 'var(--mint-dark)', fontWeight: 600 }}>100% satisfaction guarantee</strong>
+              )}
+              . Serving {site.city}, {site.state} & beyond.
             </p>
           </Reveal>
         </div>

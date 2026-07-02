@@ -5,6 +5,7 @@ import Logo from './Logo';
 import Icon from './Icon';
 import { site, tel } from '../lib/site';
 import { useAuth } from '../lib/auth';
+import { useSiteSettings } from '../lib/settingsStore';
 
 const navLinks = [
   { to: '/services', label: 'Services' },
@@ -13,13 +14,14 @@ const navLinks = [
   { to: '/about', label: 'About' },
 ];
 
+// `gate` marks links the admin controls from the dashboard (hidden unless enabled).
 const mobileLinks = [
   { to: '/services', label: 'Services' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/how-it-works', label: 'How It Works' },
-  { to: '/guarantee', label: 'Our Guarantee' },
+  { to: '/guarantee', label: 'Our Guarantee', gate: 'showGuarantee' as const },
   { to: '/reviews', label: 'Reviews' },
-  { to: '/specials', label: 'Specials' },
+  { to: '/specials', label: 'Specials', gate: 'showSpecials' as const },
   { to: '/about', label: 'About' },
   { to: '/#contact', label: 'Contact' },
 ];
@@ -29,6 +31,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const { customer } = useAuth();
+  const settings = useSiteSettings();
+  // Admin-gated links only appear once enabled in the dashboard.
+  const visibleMobileLinks = mobileLinks.filter((l) => !l.gate || settings[l.gate]);
   const accountHref = customer ? '/account' : '/login';
   const accountLabel = customer ? 'My Account' : 'Client Login';
 
@@ -156,7 +161,7 @@ export default function Navbar() {
               <Logo size={28} />
             </div>
             <nav style={{ padding: '8px 24px 16px' }}>
-              {mobileLinks.map((l) => (
+              {visibleMobileLinks.map((l) => (
                 <Link key={l.to} to={l.to} className="mob-link" onClick={() => setOpen(false)}>
                   {l.label}
                 </Link>

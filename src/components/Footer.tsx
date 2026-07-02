@@ -7,6 +7,7 @@ import { site, tel, mailto } from '../lib/site';
 import { services } from '../lib/data';
 import { areas } from '../lib/areas';
 import { submitLead } from '../lib/forms';
+import { useSiteSettings } from '../lib/settingsStore';
 
 // Only render social links that point to a real profile (not the "#" placeholder).
 const socials = (
@@ -19,6 +20,7 @@ const socials = (
 
 export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
+  const settings = useSiteSettings();
 
   const onSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -87,8 +89,9 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               {[
                 { to: '/how-it-works', label: 'How It Works' },
-                { to: '/guarantee', label: 'Our Guarantee' },
-                { to: '/specials', label: 'Specials' },
+                // Admin-gated: hidden until enabled in the dashboard.
+                ...(settings.showGuarantee ? [{ to: '/guarantee', label: 'Our Guarantee' }] : []),
+                ...(settings.showSpecials ? [{ to: '/specials', label: 'Specials' }] : []),
                 { to: '/reviews', label: 'Reviews' },
                 { to: '/pricing', label: 'Pricing' },
                 { to: '/about', label: 'About' },

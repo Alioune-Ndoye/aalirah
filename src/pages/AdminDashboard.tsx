@@ -9,6 +9,8 @@ import {
   listPendingReviews,
   setReviewStatus,
   downloadBookingsCsv,
+  getSiteSettings,
+  updateSiteSettings,
   listCustomers,
   getCustomer,
   updateCustomer,
@@ -121,7 +123,7 @@ function Login({ onSuccess }: { onSuccess: (t: string) => void }) {
 }
 
 function Dashboard({ token, onLogout }: { token: string; onLogout: () => void }) {
-  const [tab, setTab] = useState<'bookings' | 'reviews' | 'customers'>('bookings');
+  const [tab, setTab] = useState<'bookings' | 'reviews' | 'customers' | 'site'>('bookings');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<PendingReview[]>([]);
   const [filter, setFilter] = useState<BookingStatus | ''>('');
@@ -188,6 +190,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
         <TabBtn active={tab === 'bookings'} onClick={() => setTab('bookings')}>Bookings ({bookings.length})</TabBtn>
         <TabBtn active={tab === 'reviews'} onClick={() => setTab('reviews')}>Reviews ({reviews.length})</TabBtn>
         <TabBtn active={tab === 'customers'} onClick={() => setTab('customers')}>Customers</TabBtn>
+        <TabBtn active={tab === 'site'} onClick={() => setTab('site')}>Site</TabBtn>
       </div>
 
       {loading && <p style={{ color: 'var(--text-muted)' }}>Loading…</p>}
@@ -244,6 +247,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
       )}
 
       {tab === 'customers' && <CustomersTab token={token} />}
+      {tab === 'site' && <SiteTab token={token} />}
     </div>
   );
 }
@@ -502,4 +506,60 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
 
 function Empty({ children }: { children: React.ReactNode }) {
   return <p style={{ color: 'var(--text-muted)', padding: '40px 0', textAlign: 'center' }}>{children}</p>;
+}
+
+/** Site tab: feature toggles. Pages stay hidden on the site until enabled here. */
+function SiteTab({ token }: { token: string }) {
+  const [settings, setSettings] = useState<{ showGuarantee: boolean; showSpecials: boolean } | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    getSiteSettings().then(setSettings);
+  }, []);
+
+  const toggle = async (key: 'showGuarantee' | 'showSpecials') => {
+    if (!settings || saving) return;
+    setSaving(true);
+    const next = await updateSiteSettings(token, { [key]: !settings[key] });
+    if (next) setSettings(next);
+    setSaving(false);
+  };
+
+  if (!settings) return <Empty>Loading site settings…</Empty>;
+
+  const rows: { key: 'showGuarantee' | 'showSpecials'; label: string; desc: string }[] = [
+    { key: 'showGuarantee', label: 'Our Guarantee page', desc: 'Shows the Guarantee link in the menu and footer.' },
+    { key: 'showSpecials', label: 'Specials page', desc: 'Shows the Specials link in the menu, footer, and Reviews page.' },
+  ];
+
+  return (
+    <div className="space-y-3" style={{ maxWidth: 620 }}>
+      {rows.map((r) => (
+        <div key={r.key} style={cardStyle} className="flex items-center justify-between gap-4">
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>{r.label}</div>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>{r.desc}</div>
+          </div>
+          <button
+            onClick={() => toggle(r.key)}
+            disabled={saving}
+            aria-pressed={settings[r.key]}
+            style={{
+              padding: '8px 18px', borderRadius: 20, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer',
+              fontFamily: "'Space Grotesk',sans-serif", minWidth: 92,
+              background: settings[r.key] ? '#16a34a' : '#fff',
+              color: settings[r.key] ? '#fff' : 'var(--text-muted)',
+              border: `1px solid ${settings[r.key] ? '#16a34a' : 'var(--border)'}`,
+              opacity: saving ? 0.6 : 1,
+            }}
+          >
+            {settings[r.key] ? 'Visible' : 'Hidden'}
+          </button>
+        </div>
+      ))}
+      <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+        Changes apply to the live site immediately (visitors see them on their next page load).
+      </p>
+    </div>
+  );
 }

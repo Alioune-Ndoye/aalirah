@@ -11,12 +11,14 @@ import type { Testimonial } from '../lib/data';
 import { getSubmittedReviews, apiEnabled, fetchApprovedReviews, fetchGoogleReviews } from '../lib/reviewStore';
 import { autoPoster } from '../lib/video';
 import { site } from '../lib/site';
+import { useSiteSettings } from '../lib/settingsStore';
 
 const initials = (name: string) =>
   name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
 
 export default function Reviews() {
   const [activeVideo, setActiveVideo] = useState<{ src: string; name: string } | null>(null);
+  const settings = useSiteSettings();
   // Dynamic reviews: approved reviews from the backend, or locally-submitted demo reviews.
   const [dynamic, setDynamic] = useState<(Testimonial & { id: string; pending?: boolean })[]>([]);
 
@@ -243,9 +245,11 @@ export default function Reviews() {
               Get a Free Quote
               <Icon name="arrow" size={14} strokeWidth={2} />
             </Link>
-            <Link to="/specials" className="btn-ghost">
-              See Current Specials
-            </Link>
+            {settings.showSpecials && (
+              <Link to="/specials" className="btn-ghost">
+                See Current Specials
+              </Link>
+            )}
           </div>
         </div>
       </section>
