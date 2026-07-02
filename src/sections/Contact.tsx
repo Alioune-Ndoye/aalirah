@@ -10,11 +10,15 @@ const rows: { href: string; icon: IconName; label: string; val: string }[] = [
   { href: '#', icon: 'clock', label: 'Hours', val: site.hours },
 ];
 
-const socials: { label: string; href: string; icon: IconName }[] = [
-  { label: 'Instagram', href: site.social.instagram, icon: 'instagram' },
-  { label: 'Facebook', href: site.social.facebook, icon: 'facebook' },
-  { label: 'LinkedIn', href: site.social.linkedin, icon: 'linkedin' },
-];
+const hasLink = (h?: string) => Boolean(h && h !== '#');
+
+const socials = (
+  [
+    { label: 'Instagram', href: site.social.instagram, icon: 'instagram' },
+    { label: 'Facebook', href: site.social.facebook, icon: 'facebook' },
+    { label: 'LinkedIn', href: site.social.linkedin, icon: 'linkedin' },
+  ] as { label: string; href: string; icon: IconName }[]
+).filter((s) => hasLink(s.href));
 
 export default function Contact() {
   return (
@@ -58,38 +62,48 @@ export default function Contact() {
           </h2>
 
           <div className="space-y-4 mb-10">
-            {rows.map((c) => (
-              <a key={c.label} href={c.href} className="contact-band">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint-dark)' }}
-                >
-                  <Icon name={c.icon} size={16} strokeWidth={1.5} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-                    {c.label}
+            {rows.map((c) => {
+              const inner = (
+                <>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint-dark)' }}
+                  >
+                    <Icon name={c.icon} size={16} strokeWidth={1.5} />
                   </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--forest)', marginTop: 2 }}>{c.val}</div>
-                </div>
-              </a>
-            ))}
+                  <div>
+                    <div style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                      {c.label}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--forest)', marginTop: 2 }}>{c.val}</div>
+                  </div>
+                </>
+              );
+              // Phone/email are real links; hours is just info (no dead "#" link).
+              return hasLink(c.href) ? (
+                <a key={c.label} href={c.href} className="contact-band">{inner}</a>
+              ) : (
+                <div key={c.label} className="contact-band" style={{ cursor: 'default' }}>{inner}</div>
+              );
+            })}
           </div>
 
           <ContactForm />
 
-          <div style={{ marginTop: 40 }}>
-            <div style={{ fontSize: '0.68rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 14 }}>
-              Follow Our Work
+          {socials.length > 0 && (
+            <div style={{ marginTop: 40 }}>
+              <div style={{ fontSize: '0.68rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 14 }}>
+                Follow Our Work
+              </div>
+              <div className="flex gap-3">
+                {socials.map((s) => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-btn-light" aria-label={s.label}>
+                    <Icon name={s.icon} size={16} strokeWidth={1.5} />
+                  </a>
+                ))}
+              </div>
             </div>
-            <div className="flex gap-3">
-              {socials.map((s) => (
-                <a key={s.label} href={s.href} className="social-btn-light" aria-label={s.label}>
-                  <Icon name={s.icon} size={16} strokeWidth={1.5} />
-                </a>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

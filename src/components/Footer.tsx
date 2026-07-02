@@ -8,11 +8,14 @@ import { services } from '../lib/data';
 import { areas } from '../lib/areas';
 import { submitLead } from '../lib/forms';
 
-const socials: { label: string; href: string; icon: IconName }[] = [
-  { label: 'Instagram', href: site.social.instagram, icon: 'instagram' },
-  { label: 'Facebook', href: site.social.facebook, icon: 'facebook' },
-  { label: 'LinkedIn', href: site.social.linkedin, icon: 'linkedin' },
-];
+// Only render social links that point to a real profile (not the "#" placeholder).
+const socials = (
+  [
+    { label: 'Instagram', href: site.social.instagram, icon: 'instagram' },
+    { label: 'Facebook', href: site.social.facebook, icon: 'facebook' },
+    { label: 'LinkedIn', href: site.social.linkedin, icon: 'linkedin' },
+  ] as { label: string; href: string; icon: IconName }[]
+).filter((s) => s.href && s.href !== '#');
 
 export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
@@ -38,12 +41,12 @@ export default function Footer() {
               {site.tagline}
             </div>
             <p className="text-sm leading-relaxed max-w-xs mb-8 text-white/50">
-              Professional cleaning services that transform your space. Trusted by 25+ clients across West
-              Hartford, CT.
+              Professional cleaning services that transform your space — eco-certified, insured, and
+              background-checked, serving West Hartford, CT and Greater Hartford.
             </p>
             <div className="flex gap-3">
               {socials.map((s) => (
-                <a key={s.label} href={s.href} className="social-btn" aria-label={s.label}>
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="social-btn" aria-label={s.label}>
                   <Icon name={s.icon} size={16} strokeWidth={1.5} />
                 </a>
               ))}
