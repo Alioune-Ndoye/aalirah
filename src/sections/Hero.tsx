@@ -19,32 +19,17 @@ export default function Hero() {
   }, []);
   const liveStats = stats.map((s) => (s.dynamic ? { ...s, num: s.num + bookingCount } : s));
 
-  // Swap to the purpose-framed portrait video on phones (keeps the vase centered),
-  // and the wide landscape video on larger screens. Re-swaps if the viewport
-  // crosses the breakpoint (rotation / devtools).
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const mq = window.matchMedia('(max-width: 767px)');
-    const setSrc = (mobile: boolean) => {
-      v.poster = mobile ? '/assets/video/poster_mobile.webp' : '/assets/video/poster_desktop.webp';
-      const next = mobile ? '/assets/video/apartment_mobile.mp4' : '/assets/video/apartment_6s.mp4';
-      if (v.getAttribute('src') === next) return;
-      v.setAttribute('src', next);
-      v.load();
-      v.play().catch(() => {});
-    };
-    setSrc(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setSrc(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
+  // One full-frame landscape video on every screen size. On phones the CSS
+  // letterboxes it (object-fit: contain) so the WHOLE frame is visible —
+  // zoomed out, vase centered — instead of a cropped portrait slice.
 
   return (
     <section id="hero" className="hero-section relative flex items-center" style={{ overflow: 'clip' }}>
       <video
         ref={videoRef}
         className="hero-video-bg"
+        src="/assets/video/apartment_6s.mp4"
+        poster="/assets/video/poster_desktop.webp"
         autoPlay
         muted
         loop

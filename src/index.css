@@ -329,10 +329,12 @@ img {
   pointer-events: none;
   z-index: 0;
 }
-/* On phones, anchor the crop on the table + vase so it stays the focal point */
+/* On phones, letterbox instead of crop: the WHOLE frame stays visible
+   (zoomed out), with the vase centered as the focal point. */
 @media (max-width: 767px) {
   .hero-video-bg {
-    object-position: center 62%;
+    object-fit: contain;
+    object-position: center center;
   }
 }
 .hero-photo-bg {

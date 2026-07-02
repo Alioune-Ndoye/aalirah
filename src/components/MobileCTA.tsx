@@ -2,10 +2,11 @@ import { Link, useLocation } from 'react-router-dom';
 import Icon from './Icon';
 import { site, tel } from '../lib/site';
 
-/** Sticky bottom call/book bar — mobile only, hidden on the booking page. */
+/** Sticky bottom call/book bar — mobile only. Hidden on the booking page
+ *  (redundant there) and on the homepage (the hero already carries the CTAs). */
 export default function MobileCTA() {
   const { pathname } = useLocation();
-  if (pathname === '/book') return null;
+  if (pathname === '/book' || pathname === '/') return null;
 
   return (
     <div
