@@ -33,7 +33,7 @@ export type SignupInput = {
   zip?: string;
 };
 
-type Result = { ok: true } | { ok: false; error: string };
+type Result = { ok: true; pending?: boolean } | { ok: false; error: string; pending?: boolean };
 
 type AuthCtx = {
   customer: Customer | null;
@@ -41,6 +41,10 @@ type AuthCtx = {
   configured: boolean;
   signup: (data: SignupInput) => Promise<Result>;
   login: (email: string, password: string) => Promise<Result>;
+  /** Enter the access code the owner forwarded — activates the account + signs in. */
+  verify: (email: string, code: string) => Promise<Result>;
+  /** Ask the business to send a fresh access code. */
+  resendCode: (email: string) => Promise<Result>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   updateProfile: (data: Record<string, unknown>) => Promise<Result>;
@@ -86,9 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch(`${API_URL}${path}`, opts(method, body));
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) return { ok: false, error: data?.error || `Request failed (${res.status})` };
+      if (!res.ok) {
+        return { ok: false, error: data?.error || `Request failed (${res.status})`, pending: data?.pending === true };
+      }
       if (data.customer) setCustomer(data.customer);
-      return { ok: true };
+      return { ok: true, pending: data?.pending === true };
     } catch {
       return { ok: false, error: 'Could not reach the server. Please try again.' };
     }
@@ -100,6 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     configured,
     signup: (data) => handle('/api/auth/signup', 'POST', data),
     login: (email, password) => handle('/api/auth/login', 'POST', { email, password }),
+    verify: (email, code) => handle('/api/auth/verify', 'POST', { email, code }),
+    resendCode: (email) => handle('/api/auth/resend-code', 'POST', { email }),
     updateProfile: (data) => handle('/api/account/profile', 'PATCH', data),
     logout: async () => {
       if (configured) {

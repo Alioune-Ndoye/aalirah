@@ -17,7 +17,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
-  const { customer, loading, configured, login, signup } = useAuth();
+  const { customer, loading, configured, login, signup, verify, resendCode } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -29,6 +29,12 @@ export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
   const [phone, setPhone] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Owner-approval step: after signup (or a pending login), the customer
+  // enters the access code that Aliraah forwards to them.
+  const [step, setStep] = useState<'form' | 'verify'>('form');
+  const [code, setCode] = useState('');
+  const [resent, setResent] = useState(false);
 
   // Already signed in → go to the portal.
   useEffect(() => {
@@ -49,8 +55,30 @@ export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
       ? await signup({ firstName, lastName, email, password, phone })
       : await login(email, password);
     setBusy(false);
+    if (res.ok && res.pending) {
+      setStep('verify'); // account created — waiting on the access code
+    } else if (res.ok) {
+      navigate('/account', { replace: true });
+    } else if (res.pending) {
+      setStep('verify'); // right password, account not approved yet
+    } else {
+      setErr(res.error);
+    }
+  };
+
+  const submitCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(null);
+    setBusy(true);
+    const res = await verify(email, code.trim());
+    setBusy(false);
     if (res.ok) navigate('/account', { replace: true });
     else setErr(res.error);
+  };
+
+  const resend = async () => {
+    setResent(true);
+    await resendCode(email);
   };
 
   return (
@@ -65,6 +93,48 @@ export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
       <section style={{ background: 'var(--forest)', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: 100, paddingBottom: 60 }}>
         <div className="wrap" style={{ maxWidth: 460 }}>
           <div style={{ background: 'var(--ivory)', borderRadius: 24, padding: 'clamp(28px,5vw,44px)', border: '1px solid rgba(198,167,105,0.2)' }}>
+            {step === 'verify' ? (
+              <>
+                <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem,5vw,2.6rem)', color: 'var(--forest)', marginBottom: 6 }}>
+                  Enter your <em>access code</em>
+                </h1>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 26 }}>
+                  Your account is almost ready. {site.name} will send you a 6-digit access code —
+                  enter it below to activate your account.
+                </p>
+                <form onSubmit={submitCode}>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{6}"
+                    maxLength={6}
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="6-digit code"
+                    required
+                    autoFocus
+                    style={{ ...inputStyle, textAlign: 'center', letterSpacing: '0.5em', fontSize: '1.3rem', fontFamily: "'Space Grotesk', sans-serif" }}
+                  />
+                  {err && <p style={{ color: '#c0392b', fontSize: '0.82rem', margin: '10px 0' }}>{err}</p>}
+                  <button type="submit" disabled={busy || code.length !== 6} className="btn-primary w-full justify-center" style={{ marginTop: 14, opacity: busy || code.length !== 6 ? 0.6 : 1 }}>
+                    {busy ? 'Checking…' : 'Activate Account'}
+                    {!busy && <Icon name="arrow" size={14} strokeWidth={2} />}
+                  </button>
+                </form>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 22, textAlign: 'center' }}>
+                  {resent ? (
+                    <span style={{ color: 'var(--mint-dark)' }}>A new code has been requested — {site.name} will reach out shortly.</span>
+                  ) : (
+                    <>Didn't get a code?{' '}
+                      <button type="button" onClick={resend} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--mint-dark)', fontWeight: 600, fontSize: '0.85rem' }}>
+                        Request a new one
+                      </button>
+                    </>
+                  )}
+                </p>
+              </>
+            ) : (
+              <>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem,5vw,2.6rem)', color: 'var(--forest)', marginBottom: 6 }}>
               {isSignup ? <>Create your <em>account</em></> : <>Welcome <em>back</em></>}
             </h1>
@@ -159,6 +229,8 @@ export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
                 <>New here? <Link to="/signup" style={{ color: 'var(--mint-dark)', fontWeight: 600 }}>Create an account</Link></>
               )}
             </p>
+              </>
+            )}
           </div>
         </div>
       </section>

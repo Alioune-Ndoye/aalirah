@@ -316,6 +316,7 @@ function CustomersTab({ token }: { token: string }) {
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{c.email} · #{c.accountNumber}</div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--mint-dark)', textTransform: 'capitalize', marginTop: 2 }}>
                   {c.tier}{c.discountRate > 0 ? ` · ${c.discountRate}% off` : ''}{c.recurring ? ' · recurring' : ''}
+                  {c.verified === false && <span style={{ color: '#b8860b', fontWeight: 700 }}> · awaiting code</span>}
                 </div>
               </button>
             ))}

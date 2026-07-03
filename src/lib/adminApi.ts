@@ -108,6 +108,7 @@ export type AdminCustomer = {
   recurring: boolean;
   avatarUrl: string;
   status: 'active' | 'suspended';
+  verified?: boolean;
   createdAt: string;
 };
 
