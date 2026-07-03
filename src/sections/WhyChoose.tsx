@@ -6,11 +6,11 @@ const features = [
   {
     n: '01',
     title: 'Vetted & Trained Specialists',
-    body: 'Every team member passes rigorous background checks and a 40-hour proprietary training program before entering your home.',
+    body: 'Every team member passes a background check and hands-on training before entering your home.',
   },
   {
     n: '02',
-    title: 'Premium Eco-Certified Products',
+    title: 'Premium Eco-Friendly Products',
     body: 'We use only luxury-grade, non-toxic solutions that protect your surfaces, your family, and the environment.',
   },
   {
@@ -26,8 +26,8 @@ const features = [
 ];
 
 const floatTags = [
-  { icon: 'check-circle' as const, label: 'Eco-Certified', top: '18%', right: '14%', delay: 0 },
-  { icon: 'star' as const, label: '5-Star Rated', bottom: '20%', right: '8%', delay: 1, fill: true },
+  { icon: 'check-circle' as const, label: 'Eco-Friendly', top: '18%', right: '14%', delay: 0 },
+  { icon: 'shield' as const, label: 'Insured & Bonded', bottom: '20%', right: '8%', delay: 1 },
 ];
 
 export default function WhyChoose() {
@@ -123,7 +123,7 @@ export default function WhyChoose() {
                 letterSpacing: '0.08em',
               }}
             >
-              <Icon name={t.icon} size={12} strokeWidth={2} fill={t.fill} />
+              <Icon name={t.icon} size={12} strokeWidth={2} />
               {t.label}
             </motion.div>
           ))}

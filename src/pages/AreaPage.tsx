@@ -30,7 +30,7 @@ export default function AreaPage({ slug }: { slug: string }) {
         label={`Serving ${area.town}, ${site.state}`}
         title="Cleaning in"
         em={area.town}
-        sub={`Eco-certified, fully insured, background-checked cleaning for homes and businesses across ${area.town}.`}
+        sub={`Eco-friendly, fully insured, background-checked cleaning for homes and businesses across ${area.town}.`}
         marquee
         minH="58vh"
       />

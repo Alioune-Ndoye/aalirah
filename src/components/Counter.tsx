@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
-/** Counts up to `target` once it scrolls into view. */
+/** Counts up to `target` once it scrolls into view.
+ *  Renders the FINAL value initially so pre-rendered (SSG) HTML and no-JS
+ *  visitors see real numbers, never "0" — the count-up is a client garnish. */
 export default function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(target);
   const done = useRef(false);
 
   useEffect(() => {
@@ -11,6 +13,7 @@ export default function Counter({ target, suffix = '' }: { target: number; suffi
     if (!el) return;
     // Re-arm when the target changes (e.g. the live booking count arrives).
     done.current = false;
+    setValue(0);
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

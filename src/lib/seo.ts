@@ -13,7 +13,7 @@ export const meta: Record<string, PageMeta> = {
   home: {
     title: `${site.name} — Professional Cleaning Services in ${site.city}, ${site.state}`,
     description:
-      `Top-rated professional cleaning in ${site.city}, CT. Eco-certified, fully insured, background-checked team. ` +
+      `Professional cleaning in ${site.city}, CT. Eco-friendly, fully insured, background-checked team. ` +
       'Residential, commercial, move-out & more. 100% satisfaction guaranteed. Book online in 60 seconds.',
     path: '/',
   },
@@ -21,7 +21,7 @@ export const meta: Record<string, PageMeta> = {
     title: `Cleaning Services in ${site.city}, ${site.state} — ${site.name}`,
     description:
       `Explore our professional cleaning services in ${site.city}, CT: residential deep clean, office cleaning, ` +
-      'move-out, post-construction, luxury estate care & event prep. Eco-certified, fully insured.',
+      'move-out, post-construction, luxury estate care & event prep. Eco-friendly, fully insured.',
     path: '/services',
   },
   about: {
@@ -89,7 +89,7 @@ export const servicePath = (slug: string) => `/services/${slug}`;
 export function serviceMeta(s: Service): PageMeta {
   return {
     title: `${s.shortTitle} in ${site.city}, ${site.state} | ${site.name}`,
-    description: `${s.desc} ${site.name} — eco-certified, insured & bonded, satisfaction guaranteed in ${site.city}, CT.`,
+    description: `${s.desc} ${site.name} — eco-friendly, insured & bonded, satisfaction guaranteed in ${site.city}, CT.`,
     path: servicePath(s.slug),
   };
 }

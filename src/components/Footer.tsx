@@ -43,7 +43,7 @@ export default function Footer() {
               {site.tagline}
             </div>
             <p className="text-sm leading-relaxed max-w-xs mb-8 text-white/50">
-              Professional cleaning services that transform your space — eco-certified, insured, and
+              Professional cleaning services that transform your space — eco-friendly, insured, and
               background-checked, serving West Hartford, CT and Greater Hartford.
             </p>
             <div className="flex gap-3">

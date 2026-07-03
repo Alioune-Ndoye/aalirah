@@ -1,23 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Icon from '../components/Icon';
-import Counter from '../components/Counter';
 import TrustMarquee from '../components/TrustMarquee';
-import { stats } from '../lib/data';
-import { fetchBookingCount } from '../lib/bookingStore';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Live booking count — the "Spaces Cleaned" stat grows by 1 with every booking.
-  const [bookingCount, setBookingCount] = useState(0);
-  useEffect(() => {
-    fetchBookingCount().then(setBookingCount);
-  }, []);
-  const liveStats = stats.map((s) => (s.dynamic ? { ...s, num: s.num + bookingCount } : s));
 
   // One full-frame landscape video on every screen size. On phones the CSS
   // letterboxes it (object-fit: contain) so the WHOLE frame is visible —
@@ -143,7 +133,7 @@ export default function Hero() {
               <span style={{ color: 'var(--mint)' }}>
                 <Icon name="leaf" size={14} strokeWidth={1.9} />
               </span>
-              Eco-Certified
+              Eco-Friendly Products
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span style={{ color: 'var(--mint)', display: 'inline-flex' }}>
@@ -153,43 +143,9 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.85, ease }}
-            className="flex flex-wrap gap-8 pt-8 border-t border-white/10"
-          >
-            {liveStats.map((st, i) => (
-              <div key={st.label} className="flex items-center gap-8">
-                {i > 0 && <div className="hidden sm:block w-px h-10 bg-white/10" />}
-                <div className="text-center">
-                  <div
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: '2.8rem',
-                      fontWeight: 800,
-                      letterSpacing: '-0.04em',
-                      color: 'var(--mint)',
-                      lineHeight: 1,
-                    }}
-                  >
-                    <Counter target={st.num} suffix={st.suffix} />
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '0.68rem',
-                      letterSpacing: '0.16em',
-                      textTransform: 'uppercase',
-                      color: 'rgba(255,255,255,0.4)',
-                      marginTop: 6,
-                    }}
-                  >
-                    {st.label}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
+          {/* Stat counters removed pre-launch: no earned numbers to show yet
+              (and the SSG snapshot rendered them as 0+/0%/0★). Bring back
+              real figures once the business has them. */}
         </div>
 
         {/* Right: visual frame (desktop) */}
@@ -230,7 +186,7 @@ export default function Hero() {
                     Satisfaction Guaranteed
                   </div>
                   <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>
-                    Eco-Certified · Fully Insured
+                    Eco-Friendly · Fully Insured
                   </div>
                 </div>
                 <div className="ml-auto flex -space-x-2">

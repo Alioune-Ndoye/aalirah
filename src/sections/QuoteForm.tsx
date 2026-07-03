@@ -44,7 +44,7 @@ export default function QuoteForm() {
             no commitment, and never any hidden fees.
           </p>
           <ul className="space-y-3">
-            {['Insured & bonded, background-checked team', 'Eco-certified, family- & pet-safe products', '100% satisfaction guarantee'].map((t) => (
+            {['Insured & bonded, background-checked team', 'Eco-friendly, family- & pet-safe products', '100% satisfaction guarantee'].map((t) => (
               <li key={t} className="flex items-center gap-3" style={{ color: 'var(--forest)', fontSize: '0.92rem' }}>
                 <span style={{ color: 'var(--mint-dark)' }}>
                   <Icon name="check-circle" size={18} strokeWidth={1.8} />

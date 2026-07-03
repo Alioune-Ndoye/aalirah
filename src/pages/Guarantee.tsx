@@ -21,12 +21,12 @@ const promises: { icon: IconName; title: string; body: string }[] = [
   {
     icon: 'users',
     title: 'Vetted Professionals',
-    body: 'Every cleaner is background-checked and completes a 40-hour training program before entering a single client home.',
+    body: 'Every cleaner is background-checked and completes hands-on training before entering a single client home.',
   },
   {
     icon: 'leaf',
-    title: 'Safe, Eco-Certified Products',
-    body: 'We use only premium, non-toxic, eco-certified solutions — safe for your family, your pets, and the planet.',
+    title: 'Safe, Eco-Friendly Products',
+    body: 'We use only premium, non-toxic, eco-friendly solutions — safe for your family, your pets, and the planet.',
   },
 ];
 

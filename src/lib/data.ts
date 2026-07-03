@@ -173,7 +173,7 @@ export const services: Service[] = [
       'All living spaces & bedrooms',
       'Interior windows & sills',
       'Building / concierge access friendly',
-      'Eco-certified, low-odor products',
+      'Eco-friendly, low-odor products',
       'Flexible same-day windows',
     ],
   },
@@ -185,7 +185,7 @@ export const services: Service[] = [
     tag: 'Fast Turnovers',
     icon: 'key',
     image: U('1616486338812-3dadae4b4ace'),
-    desc: 'Five-star turnovers between guests — staged, restocked, and photo-ready on a tight timeline.',
+    desc: 'Spotless turnovers between guests — staged, restocked, and photo-ready on a tight timeline.',
     longDesc:
       'Your reviews depend on the clean. We handle fast, reliable turnovers for Airbnb and short-term rentals — stripping and remaking beds, restocking essentials, staging the space to your listing photos, and flagging any damage or low supplies. Built for tight same-day checkout-to-checkin windows.',
     includes: [
@@ -206,12 +206,12 @@ export const reasons: Reason[] = [
     n: '01',
     icon: 'users',
     title: 'Vetted & Trained Specialists',
-    body: 'Every team member passes rigorous background checks and a 40-hour proprietary training program before setting foot in your home.',
+    body: 'Every team member passes a background check and hands-on training before setting foot in your home.',
   },
   {
     n: '02',
     icon: 'leaf',
-    title: 'Eco-Certified Products',
+    title: 'Eco-Friendly Products',
     body: 'We use only premium, non-toxic solutions that protect your surfaces, your family, and the planet — no harsh chemicals, ever.',
   },
   {
@@ -229,8 +229,8 @@ export const reasons: Reason[] = [
   {
     n: '05',
     icon: 'star',
-    title: '5-Star Rated on Google',
-    body: 'Hundreds of verified 5-star reviews from real Connecticut clients. Our reputation is built one spotless space at a time.',
+    title: 'Locally Owned & Operated',
+    body: 'A West Hartford business, not a franchise. The owner stands behind every clean — our reputation is built one spotless space at a time.',
   },
   {
     n: '06',
@@ -246,7 +246,7 @@ export const values: Value[] = [
   { n: '01', title: 'Integrity', body: 'We enter your home with the same respect we would want for our own. Every promise we make is kept.' },
   { n: '02', title: 'Artisanship', body: 'Our work is not mechanical — it is considered. Every surface, every corner, approached with precision.' },
   { n: '03', title: 'Discretion', body: 'Your home is your sanctuary. We operate silently, professionally, and with the utmost respect for your privacy.' },
-  { n: '04', title: 'Sustainability', body: "Luxury should never come at the planet's expense. We use only eco-certified, non-toxic premium products." },
+  { n: '04', title: 'Sustainability', body: "Luxury should never come at the planet's expense. We use only eco-friendly, non-toxic premium products." },
   { n: '05', title: 'Excellence', body: 'Good enough is never enough. We set the standard and then exceed it — every single visit.' },
   { n: '06', title: 'Warmth', body: 'Behind every clean home is a person we care about. We bring genuine warmth to everything we do.' },
 ];
@@ -303,13 +303,13 @@ export const showcases: Showcase[] = [
 export type TrustItem = { icon: IconName; label: string; fill?: boolean };
 
 export const trustItems: TrustItem[] = [
-  { icon: 'star', label: '5-Star Google Rating', fill: true },
+  { icon: 'home', label: 'Locally Owned & Operated' },
   { icon: 'shield', label: 'Fully Insured' },
-  { icon: 'leaf', label: 'Eco-Certified Products' },
+  { icon: 'leaf', label: 'Eco-Friendly Products' },
   { icon: 'users', label: 'Background-Checked Team' },
   { icon: 'clock', label: 'Same-Day Availability' },
   { icon: 'check-circle', label: '100% Satisfaction Guarantee' },
-  { icon: 'home', label: '25+ Homes Transformed' },
+  { icon: 'monitor', label: 'Book Online in 60 Seconds' },
 ];
 
 export type Faq = { q: string; a: string };
@@ -321,11 +321,11 @@ export const faqs: Faq[] = [
   },
   {
     q: 'Are your cleaning products eco-friendly and safe for children and pets?',
-    a: 'Yes. We use only premium, eco-certified, non-toxic cleaning solutions that are completely safe for your family, pets, and the environment. No harsh chemicals — ever.',
+    a: 'Yes. We use only premium, eco-friendly, non-toxic cleaning solutions that are completely safe for your family, pets, and the environment. No harsh chemicals — ever.',
   },
   {
     q: 'Are your cleaners background-checked and insured?',
-    a: 'Absolutely. Every team member passes a rigorous background check, is fully insured and bonded, and completes a 40-hour proprietary training program before entering any client home.',
+    a: 'Absolutely. Every team member passes a rigorous background check, is fully insured and bonded, and completes hands-on training before entering any client home.',
   },
   {
     q: 'Do you offer a satisfaction guarantee?',
@@ -337,12 +337,9 @@ export const faqs: Faq[] = [
   },
 ];
 
-export const stats: { num: number; suffix: string; label: string; dynamic?: boolean }[] = [
-  // `dynamic` adds the live booking count on top of the base — grows with every booking.
-  { num: 25, suffix: '+', label: 'Spaces Cleaned', dynamic: true },
-  { num: 100, suffix: '%', label: 'Happy Clients' },
-  { num: 5, suffix: '★', label: 'Star Rated' },
-];
+// NOTE: The hero stat counters were removed pre-launch — a day-one business
+// can't back "X spaces cleaned / X% happy clients / 5★" claims, and the SSG
+// snapshot rendered them as "0+/0%/0★". Reintroduce real numbers once earned.
 
 /* Booking: residential pricing is driven by bedroom count (not fixed buckets).
    Anchored so 3 bedrooms = $240 to match the legacy rate. Tweak these to reprice. */
@@ -435,7 +432,7 @@ export const specials: Special[] = [
 export const processSteps = [
   { n: '01', icon: 'monitor' as IconName, title: 'Get Your Instant Quote', body: 'Pick your service and space online and see a transparent estimate in under 60 seconds — no phone tag, no waiting.' },
   { n: '02', icon: 'calendar' as IconName, title: 'Confirm & Schedule', body: "Choose a date and time that suits you. We confirm availability within 2 hours and send a reminder the day before." },
-  { n: '03', icon: 'sparkle' as IconName, title: 'We Make It Spotless', body: 'Your vetted, background-checked team arrives on time with eco-certified products and works through our detailed checklist.' },
+  { n: '03', icon: 'sparkle' as IconName, title: 'We Make It Spotless', body: 'Your vetted, background-checked team arrives on time with eco-friendly products and works through our detailed checklist.' },
   { n: '04', icon: 'shield' as IconName, title: 'Love It — Guaranteed', body: "Walk through the results. If anything isn't perfect, we return within 24 hours to make it right, free of charge." },
 ];
 

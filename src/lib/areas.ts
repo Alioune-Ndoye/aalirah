@@ -14,7 +14,7 @@ export const areas: Area[] = [
     town: 'West Hartford',
     intro:
       'West Hartford is our home turf. From the colonials around Elizabeth Park to the condos near Blue Back Square, we keep homes and offices across town spotless — and we know the area well enough to work around your block, your parking, and your schedule.',
-    blurb: 'Professional house & office cleaning in West Hartford, CT — eco-certified, insured, and background-checked.',
+    blurb: 'Professional house & office cleaning in West Hartford, CT — eco-friendly, insured, and background-checked.',
     neighborhoods: ['West Hartford Center', 'Blue Back Square', 'Elizabeth Park', 'Bishops Corner', 'Elmwood', 'The Center'],
   },
   {
@@ -62,7 +62,7 @@ export const areas: Area[] = [
     town: 'East Hartford',
     intro:
       'Just across the river, East Hartford pairs busy commercial corridors with close-knit residential streets. We keep both spotless — from offices near Founders Plaza to family homes in Hockanum — with the reliability the area runs on.',
-    blurb: 'Dependable home & office cleaning in East Hartford, CT. Insured, eco-certified, satisfaction guaranteed.',
+    blurb: 'Dependable home & office cleaning in East Hartford, CT. Insured, eco-friendly, satisfaction guaranteed.',
     neighborhoods: ['Hockanum', 'Burnside', 'Mayberry Village', 'Silver Lane', 'Founders Plaza'],
   },
   {
@@ -86,7 +86,7 @@ export const areas: Area[] = [
     town: 'Simsbury',
     intro:
       'Nestled against Talcott Mountain, Simsbury is all leafy streets and refined homes. We deliver a meticulous, respectful clean that suits the town’s relaxed elegance — whether it’s a historic colonial or a new build off Hopmeadow.',
-    blurb: 'Luxury home cleaning in Simsbury, CT. Eco-certified products, dedicated care, guaranteed results.',
+    blurb: 'Luxury home cleaning in Simsbury, CT. Eco-friendly products, dedicated care, guaranteed results.',
     neighborhoods: ['Simsbury Center', 'Weatogue', 'Tariffville', 'West Simsbury', 'Hopmeadow'],
   },
   {
@@ -118,7 +118,7 @@ export const areas: Area[] = [
     town: 'Manchester',
     intro:
       'From the shops at Buckland Hills to the historic mill homes downtown, Manchester is one of the region’s liveliest towns. We keep its homes and storefronts sparkling with dependable, detail-first service.',
-    blurb: 'Reliable residential & retail cleaning in Manchester, CT. Eco-certified, fully insured.',
+    blurb: 'Reliable residential & retail cleaning in Manchester, CT. Eco-friendly, fully insured.',
     neighborhoods: ['Downtown Manchester', 'Buckland', 'Highland Park', 'Verplanck', 'Lakewood Circle'],
   },
   {
@@ -141,8 +141,8 @@ export const areas: Area[] = [
     slug: 'enfield-ct',
     town: 'Enfield',
     intro:
-      'Up at the Massachusetts line, Enfield blends quiet residential streets with the busy Hazard Avenue retail strip. We serve homes and businesses across town with the same eco-certified, satisfaction-backed standard.',
-    blurb: 'Home & business cleaning in Enfield, CT. Eco-certified, insured, same-day availability.',
+      'Up at the Massachusetts line, Enfield blends quiet residential streets with the busy Hazard Avenue retail strip. We serve homes and businesses across town with the same eco-friendly, satisfaction-backed standard.',
+    blurb: 'Home & business cleaning in Enfield, CT. Eco-friendly, insured, same-day availability.',
     neighborhoods: ['Thompsonville', 'Hazardville', 'Scitico', 'Shaker Pines', 'North Thompsonville'],
   },
   {
@@ -165,8 +165,8 @@ export const areas: Area[] = [
     slug: 'new-britain-ct',
     town: 'New Britain',
     intro:
-      'The "Hardware City" is dense, diverse, and always moving — and its homes and businesses deserve a cleaning partner who shows up. We serve apartments, multi-families, and offices across New Britain with reliable, eco-certified service.',
-    blurb: 'Apartment, multi-family & office cleaning in New Britain, CT. Insured, eco-certified, reliable.',
+      'The "Hardware City" is dense, diverse, and always moving — and its homes and businesses deserve a cleaning partner who shows up. We serve apartments, multi-families, and offices across New Britain with reliable, eco-friendly service.',
+    blurb: 'Apartment, multi-family & office cleaning in New Britain, CT. Insured, eco-friendly, reliable.',
     neighborhoods: ['Downtown', 'Broad Street', 'Belvedere', 'East Side', 'Corbin Heights'],
   },
 ];

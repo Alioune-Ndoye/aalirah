@@ -7,7 +7,7 @@ export const site = {
   name: 'Aliraah',
   tagline: 'The Spark of Clean',
   desc:
-    'Professional cleaning services for homes and businesses in West Hartford, CT. Eco-certified products, background-checked team, 100% satisfaction guarantee.',
+    'Professional cleaning services for homes and businesses in West Hartford, CT. Eco-friendly products, background-checked team, 100% satisfaction guarantee.',
   email: 'hello@aliraah.com',
   phone: '+1 (860) 895-0233',
   phoneRaw: '+18608950233',
