@@ -27,8 +27,8 @@ export const site = {
     facebook: '#',
     linkedin: '#',
   },
-  rating: '5.0',
-  reviewCount: '100',
+  // NOTE: no rating/reviewCount fields — never publish review stats we can't
+  // back with real, verifiable reviews (FTC / Google spam-policy risk).
 
   /* ── Integrations — fill these in to go live ──────────────
      Leads: set ONE of these so form submissions reach you.

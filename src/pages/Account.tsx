@@ -40,9 +40,14 @@ export default function Account() {
 
   if (loading || !customer) {
     return (
-      <section style={{ background: 'var(--ivory)', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Loading your account…</p>
-      </section>
+      <>
+        {/* Seo must render in this branch too — it's what SSG prerenders,
+            and this private page needs its noindex in the static HTML. */}
+        <Seo title={`My Account — ${site.name}`} description="Your account, bookings and history." path="/account" noindex />
+        <section style={{ background: 'var(--ivory)', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: 'var(--text-muted)' }}>Loading your account…</p>
+        </section>
+      </>
     );
   }
 

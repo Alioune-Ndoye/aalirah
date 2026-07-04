@@ -19,13 +19,15 @@ const staticPages = [
   ['/services', 'monthly', '0.9'],
   ['/pricing', 'monthly', '0.85'],
   ['/book', 'monthly', '0.8'],
-  ['/specials', 'weekly', '0.7'],
   ['/reviews', 'monthly', '0.7'],
   ['/how-it-works', 'monthly', '0.6'],
-  ['/guarantee', 'monthly', '0.6'],
   ['/about', 'monthly', '0.6'],
   ['/privacy', 'yearly', '0.2'],
   ['/terms', 'yearly', '0.2'],
+  // NOTE: /guarantee and /specials are admin-gated (hidden until enabled in
+  // the dashboard) — re-add them here when those pages go live.
+  // Private/noindex pages (login, signup, account, crew, admin, review) are
+  // deliberately excluded.
 ];
 
 const url = (loc, freq, pri) =>
