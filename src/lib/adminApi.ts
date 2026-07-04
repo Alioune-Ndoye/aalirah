@@ -99,6 +99,7 @@ export type AdminCustomer = {
   lastName: string;
   email: string;
   accountNumber: string;
+  accountType?: 'residential' | 'property_manager';
   phone: string;
   street: string;
   apt: string;

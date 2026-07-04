@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Seo from '../components/Seo';
 import TrustMarquee from '../components/TrustMarquee';
 import { meta } from '../lib/seo';
 import { site } from '../lib/site';
 import { submitBooking } from '../lib/bookingStore';
 import { useAuth } from '../lib/auth';
+import { fetchMyProperties, type Property } from '../lib/propertyApi';
 
 /* ──────────────────────────────────────────────────────────
    Pricing engine config (ported 1:1 from PHP book.php)
@@ -112,6 +113,18 @@ export default function Book() {
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // PM dashboard: /book?property=<id> prefills the address from that saved
+  // property and links the booking to it (ownership re-verified server-side).
+  const [prop, setProp] = useState<Property | null>(null);
+  useEffect(() => {
+    const pid = new URLSearchParams(window.location.search).get('property');
+    if (!pid) return;
+    fetchMyProperties().then((list) => {
+      const match = list.find((p) => p.id === pid);
+      if (match) setProp(match);
+    });
+  }, []);
+
   const freq = frequencies.find((f) => f.id === freqId)!;
   const minDate = useMemo(() => {
     const t = new Date();
@@ -204,6 +217,7 @@ export default function Book() {
       estimatedHours: calc.totalHours,
       tip,
       promoCode: promoCode.trim().toUpperCase(),
+      ...(prop ? { propertyId: prop.id } : {}),
     };
 
     const res = await submitBooking(payload);
@@ -301,14 +315,19 @@ export default function Book() {
                       </div>
                     </FormSection>
 
-                    {/* 2 — Address */}
+                    {/* 2 — Address (key remounts inputs when a saved property loads) */}
                     <FormSection num={2} title="Address">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
-                        <div className="md:col-span-2"><Field label="Street Address"><input name="street" type="text" placeholder="123 Main St" required className="form-input" defaultValue={customer?.street ?? ''} /></Field></div>
-                        <Field label="Apt / Suite"><input name="apt" type="text" placeholder="Apt 4B" className="form-input" defaultValue={customer?.apt ?? ''} /></Field>
-                        <Field label="City"><input name="city" type="text" placeholder="West Hartford" required className="form-input" defaultValue={customer?.city ?? ''} /></Field>
+                      {prop && (
+                        <p style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.75rem', color: 'var(--mint-dark)', fontWeight: 700, marginBottom: 12 }}>
+                          Booking for: {prop.label}
+                        </p>
+                      )}
+                      <div key={prop?.id ?? 'default'} className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-5">
+                        <div className="md:col-span-2"><Field label="Street Address"><input name="street" type="text" placeholder="123 Main St" required className="form-input" defaultValue={prop?.street ?? customer?.street ?? ''} /></Field></div>
+                        <Field label="Apt / Suite"><input name="apt" type="text" placeholder="Apt 4B" className="form-input" defaultValue={prop?.apt ?? customer?.apt ?? ''} /></Field>
+                        <Field label="City"><input name="city" type="text" placeholder="West Hartford" required className="form-input" defaultValue={prop?.city ?? customer?.city ?? ''} /></Field>
                         <Field label="State">
-                          <select name="state" required defaultValue={customer?.state ?? ''} className="form-input form-select" style={{ background: 'transparent' }}>
+                          <select name="state" required defaultValue={prop?.state || customer?.state || ''} className="form-input form-select" style={{ background: 'transparent' }}>
                             <option value="" disabled>Select</option>
                             <option value="NY">NY</option>
                             <option value="CT">CT</option>
@@ -316,7 +335,7 @@ export default function Book() {
                             <option value="MA">MA</option>
                           </select>
                         </Field>
-                        <Field label="Zip Code"><input name="zip" type="text" placeholder="06110" required className="form-input" defaultValue={customer?.zip ?? ''} /></Field>
+                        <Field label="Zip Code"><input name="zip" type="text" placeholder="06110" required className="form-input" defaultValue={prop?.zip ?? customer?.zip ?? ''} /></Field>
                       </div>
                     </FormSection>
 

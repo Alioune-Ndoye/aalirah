@@ -38,6 +38,8 @@ export type BookingPayload = {
   estimatedHours?: number;
   tip?: number;
   promoCode?: string;
+  /** Saved property this clean is for (PM dashboard); server verifies ownership. */
+  propertyId?: string;
 };
 
 /** Submit a booking to the backend. Returns ok:true even when no API is

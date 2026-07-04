@@ -361,7 +361,14 @@ function CustomersTab({ token }: { token: string }) {
             </div>
 
             {/* Loyalty controls */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" style={{ padding: 14, background: 'var(--cream)', borderRadius: 12 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4" style={{ padding: 14, background: 'var(--cream)', borderRadius: 12 }}>
+              <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Account type
+                <select value={selected.accountType || 'residential'} onChange={(e) => upd({ accountType: e.target.value as 'residential' | 'property_manager' })} style={{ ...field, marginTop: 4 }}>
+                  <option value="residential">Residential</option>
+                  <option value="property_manager">Property Mgr</option>
+                </select>
+              </label>
               <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 Tier
                 <select value={selected.tier} onChange={(e) => upd({ tier: e.target.value as CustomerTier })} style={{ ...field, marginTop: 4 }}>

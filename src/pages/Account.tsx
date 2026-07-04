@@ -4,6 +4,7 @@ import Seo from '../components/Seo';
 import Icon from '../components/Icon';
 import type { IconName } from '../components/Icon';
 import { useAuth, fetchMyBookings } from '../lib/auth';
+import { fetchMyProperties, createProperty, updateProperty, type Property } from '../lib/propertyApi';
 import { site } from '../lib/site';
 
 type Booking = {
@@ -20,6 +21,7 @@ type Booking = {
   createdAt: string;
   dispatch?: 'none' | 'offered' | 'accepted' | 'declined' | 'on_the_way' | 'in_progress' | 'done';
   cleanerId?: { firstName?: string } | string | null;
+  propertyId?: string | null;
 };
 
 const TIER_LABEL: Record<string, string> = { standard: 'Standard', silver: 'Silver Member', gold: 'Gold Member' };
@@ -96,6 +98,9 @@ export default function Account() {
           <PerkCard label="Recurring plan" value={customer.recurring ? 'Enrolled' : 'Not enrolled'} icon="check-circle" />
         </div>
       </section>
+
+      {/* Property-manager dashboard: all units in one place */}
+      {customer.accountType === 'property_manager' && <PropertiesSection bookings={bookings} />}
 
       {/* Bookings */}
       <section className="bg-cream py-14">
@@ -175,6 +180,137 @@ function BookingRow({ b }: { b: Booking }) {
 function Empty({ children }: { children: React.ReactNode }) {
   return <p style={{ color: 'var(--text-muted)', padding: '20px 0' }}>{children}</p>;
 }
+
+/* ── Property-manager dashboard ──────────────────────────────────────
+   One login, every unit: each property card shows its live status,
+   next visit, and cleaning count, with one-tap booking per property. */
+
+const ACTIVE_DISPATCH = ['accepted', 'on_the_way', 'in_progress'];
+
+function PropertiesSection({ bookings }: { bookings: Booking[] }) {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ label: '', street: '', apt: '', city: '', state: 'CT', zip: '', bedrooms: '', bathrooms: '' });
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    fetchMyProperties().then(setProperties);
+  }, []);
+
+  const active = properties.filter((p) => !p.archived);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.street.trim() || busy) return;
+    setBusy(true);
+    const created = await createProperty(form);
+    setBusy(false);
+    if (created) {
+      setProperties((prev) => [...prev, created]);
+      setForm({ label: '', street: '', apt: '', city: '', state: 'CT', zip: '', bedrooms: '', bathrooms: '' });
+      setAdding(false);
+    }
+  };
+
+  const archive = async (p: Property) => {
+    const next = await updateProperty(p.id, { archived: true });
+    if (next) setProperties((prev) => prev.map((x) => (x.id === p.id ? next : x)));
+  };
+
+  return (
+    <section className="bg-ivory pb-2 pt-4">
+      <div className="wrap">
+        <div className="flex items-center justify-between mb-4">
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.8rem', color: 'var(--forest)' }}>
+            Your properties {active.length > 0 && <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>({active.length})</span>}
+          </h2>
+          <button onClick={() => setAdding((a) => !a)} className="btn-ghost" style={{ color: 'var(--forest)', borderColor: 'var(--border)', cursor: 'pointer' }}>
+            {adding ? 'Cancel' : '+ Add property'}
+          </button>
+        </div>
+
+        {adding && (
+          <form onSubmit={add} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 16, marginBottom: 16 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Label (e.g. Unit 2B)" style={pInput} />
+              <input value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} placeholder="Street address *" required style={pInput} />
+              <input value={form.apt} onChange={(e) => setForm({ ...form, apt: e.target.value })} placeholder="Apt / unit" style={pInput} />
+              <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="City" style={pInput} />
+              <input value={form.zip} onChange={(e) => setForm({ ...form, zip: e.target.value })} placeholder="Zip" style={pInput} />
+              <button type="submit" disabled={busy} className="btn-primary justify-center" style={{ opacity: busy ? 0.6 : 1 }}>
+                {busy ? 'Saving…' : 'Save property'}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {active.length === 0 && !adding ? (
+          <Empty>Add your first property to see every unit's status in one place.</Empty>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {active.map((p) => (
+              <PropertyCard
+                key={p.id}
+                p={p}
+                bookings={bookings.filter((b) => String(b.propertyId || '') === p.id)}
+                onArchive={() => archive(p)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function PropertyCard({ p, bookings, onArchive }: { p: Property; bookings: Booking[]; onArchive: () => void }) {
+  const addr = [p.street, p.apt, p.city, p.zip].filter(Boolean).join(', ');
+  // Live line: prefer an in-motion job, then upcoming, then last completed.
+  const live = bookings.find((b) => ACTIVE_DISPATCH.includes(b.dispatch || ''));
+  const upcoming = bookings.find((b) => ['new', 'contacted', 'scheduled'].includes(b.status));
+  const doneCount = bookings.filter((b) => b.dispatch === 'done' || b.status === 'completed').length;
+
+  const status = live
+    ? crewStatus(live)
+    : upcoming
+      ? { text: `📅 Scheduled${upcoming.date ? ` for ${upcoming.date}` : ''}`, color: 'var(--mint-dark)' }
+      : doneCount > 0
+        ? { text: `✔ Last clean completed · ${doneCount} total`, color: '#16a34a' }
+        : { text: 'No cleanings yet', color: 'var(--text-muted)' };
+
+  return (
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 18 }}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>{p.label}</div>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>{addr}</div>
+          {status && (
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: status.color, marginTop: 8 }}>{status.text}</div>
+          )}
+        </div>
+        <div className="text-right flex-shrink-0">
+          <Link
+            to={`/book?property=${p.id}`}
+            className="btn-dark"
+            style={{ padding: '8px 14px', fontSize: '0.75rem' }}
+          >
+            Book clean
+          </Link>
+          <div>
+            <button onClick={onArchive} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.7rem', cursor: 'pointer', marginTop: 8 }}>
+              archive
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const pInput: React.CSSProperties = {
+  padding: '10px 12px', borderRadius: 10, border: '1px solid var(--border)', background: '#fff',
+  color: 'var(--forest)', fontSize: '0.9rem', outline: 'none',
+};
 
 function ProfileSection({ customer, updateProfile }: { customer: ReturnType<typeof useAuth>['customer']; updateProfile: ReturnType<typeof useAuth>['updateProfile'] }) {
   const c = customer!;
