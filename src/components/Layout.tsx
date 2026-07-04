@@ -4,6 +4,7 @@ import Footer from './Footer';
 import SmoothScroll from './SmoothScroll';
 import Loader from './Loader';
 import MobileCTA from './MobileCTA';
+import KeyDifferentiators from './KeyDifferentiators';
 import ErrorBoundary from './ErrorBoundary';
 import Analytics from './Analytics';
 import { JsonLd } from './Seo';
@@ -29,6 +30,7 @@ export default function Layout() {
         </main>
         <Footer />
         <MobileCTA />
+        <KeyDifferentiators />
       </SmoothScroll>
     </AuthProvider>
   );

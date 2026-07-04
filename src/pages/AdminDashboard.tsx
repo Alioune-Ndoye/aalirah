@@ -11,6 +11,12 @@ import {
   downloadBookingsCsv,
   getSiteSettings,
   updateSiteSettings,
+  listCleaners,
+  createCleaner,
+  updateCleaner,
+  assignCleaner,
+  type AdminCleaner,
+  type DispatchStatus,
   listCustomers,
   getCustomer,
   updateCustomer,
@@ -123,24 +129,34 @@ function Login({ onSuccess }: { onSuccess: (t: string) => void }) {
 }
 
 function Dashboard({ token, onLogout }: { token: string; onLogout: () => void }) {
-  const [tab, setTab] = useState<'bookings' | 'reviews' | 'customers' | 'site'>('bookings');
+  const [tab, setTab] = useState<'bookings' | 'reviews' | 'customers' | 'cleaners' | 'site'>('bookings');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<PendingReview[]>([]);
+  const [cleaners, setCleaners] = useState<AdminCleaner[]>([]);
   const [filter, setFilter] = useState<BookingStatus | ''>('');
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [b, r] = await Promise.all([
+    const [b, r, cl] = await Promise.all([
       listBookings(token, filter || undefined),
       listPendingReviews(token),
+      listCleaners(token),
     ]);
     setBookings(b);
     setReviews(r);
+    setCleaners(cl);
     setLoading(false);
   }, [token, filter]);
 
   useEffect(() => { load(); }, [load]);
+
+  const assign = async (bookingId: string, cleanerId: string) => {
+    const ok = await assignCleaner(token, bookingId, cleanerId);
+    if (ok) {
+      setBookings((prev) => prev.map((b) => (b._id === bookingId ? { ...b, cleanerId, dispatch: 'offered' } : b)));
+    }
+  };
 
   const pipeline = bookings
     .filter((b) => b.status !== 'cancelled' && b.status !== 'completed')
@@ -190,6 +206,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
         <TabBtn active={tab === 'bookings'} onClick={() => setTab('bookings')}>Bookings ({bookings.length})</TabBtn>
         <TabBtn active={tab === 'reviews'} onClick={() => setTab('reviews')}>Reviews ({reviews.length})</TabBtn>
         <TabBtn active={tab === 'customers'} onClick={() => setTab('customers')}>Customers</TabBtn>
+        <TabBtn active={tab === 'cleaners'} onClick={() => setTab('cleaners')}>Cleaners ({cleaners.length})</TabBtn>
         <TabBtn active={tab === 'site'} onClick={() => setTab('site')}>Site</TabBtn>
       </div>
 
@@ -208,7 +225,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           ) : (
             <div className="space-y-3">
               {bookings.map((b) => (
-                <BookingCard key={b._id} b={b} onStatus={changeStatus} />
+                <BookingCard key={b._id} b={b} onStatus={changeStatus} cleaners={cleaners} onAssign={assign} />
               ))}
             </div>
           )}
@@ -247,6 +264,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
       )}
 
       {tab === 'customers' && <CustomersTab token={token} />}
+      {tab === 'cleaners' && <CleanersTab token={token} cleaners={cleaners} onChanged={load} />}
       {tab === 'site' && <SiteTab token={token} />}
     </div>
   );
@@ -414,8 +432,26 @@ function CustomersTab({ token }: { token: string }) {
   );
 }
 
-function BookingCard({ b, onStatus }: { b: Booking; onStatus: (id: string, s: BookingStatus) => void }) {
+const DISPATCH_LABEL: Record<DispatchStatus, string> = {
+  none: 'Unassigned',
+  offered: 'Offered…',
+  accepted: 'Accepted',
+  declined: 'Declined ✗',
+  on_the_way: 'On the way',
+  in_progress: 'In progress',
+  done: 'Done ✓',
+};
+
+function BookingCard({ b, onStatus, cleaners, onAssign }: {
+  b: Booking;
+  onStatus: (id: string, s: BookingStatus) => void;
+  cleaners: AdminCleaner[];
+  onAssign: (bookingId: string, cleanerId: string) => void;
+}) {
   const addr = [b.street, b.apt, b.city, b.state, b.zip].filter(Boolean).join(', ');
+  const dispatch: DispatchStatus = b.dispatch || 'none';
+  const assignedId = typeof b.cleanerId === 'object' && b.cleanerId ? b.cleanerId._id : (b.cleanerId as string) || '';
+  const activeCleaners = cleaners.filter((c) => c.status === 'active');
   return (
     <div style={cardStyle}>
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -455,6 +491,26 @@ function BookingCard({ b, onStatus }: { b: Booking; onStatus: (id: string, s: Bo
           >
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
+
+          {/* Crew dispatch: assign / re-offer + live status */}
+          <div style={{ marginTop: 8 }}>
+            <select
+              value={assignedId && dispatch !== 'declined' ? assignedId : ''}
+              onChange={(e) => e.target.value && onAssign(b._id, e.target.value)}
+              disabled={activeCleaners.length === 0}
+              style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', fontSize: '0.78rem', background: '#fff', color: 'var(--forest)', maxWidth: 160 }}
+            >
+              <option value="">{activeCleaners.length ? 'Assign cleaner…' : 'No cleaners yet'}</option>
+              {activeCleaners.map((c) => (
+                <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>
+              ))}
+            </select>
+            {dispatch !== 'none' && (
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, marginTop: 4, color: dispatch === 'declined' ? '#c0392b' : dispatch === 'done' ? '#16a34a' : 'var(--mint-dark)' }}>
+                {DISPATCH_LABEL[dispatch]}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -508,6 +564,96 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
 function Empty({ children }: { children: React.ReactNode }) {
   return <p style={{ color: 'var(--text-muted)', padding: '40px 0', textAlign: 'center' }}>{children}</p>;
 }
+
+/** Cleaners tab: add crew members, share their private job link, deactivate. */
+function CleanersTab({ token, cleaners, onChanged }: { token: string; cleaners: AdminCleaner[]; onChanged: () => void }) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (busy || !firstName.trim() || phone.replace(/\D/g, '').length < 7) return;
+    setBusy(true);
+    const created = await createCleaner(token, { firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() });
+    setBusy(false);
+    if (created) {
+      setFirstName(''); setLastName(''); setPhone('');
+      onChanged();
+    }
+  };
+
+  const crewLink = (c: AdminCleaner) => `${window.location.origin}/crew?k=${c.token}`;
+
+  const copy = async (c: AdminCleaner) => {
+    try {
+      await navigator.clipboard.writeText(crewLink(c));
+      setCopied(c.id);
+      setTimeout(() => setCopied(null), 1500);
+    } catch { /* clipboard unavailable */ }
+  };
+
+  const toggleActive = async (c: AdminCleaner) => {
+    await updateCleaner(token, c.id, { status: c.status === 'active' ? 'inactive' : 'active' });
+    onChanged();
+  };
+
+  return (
+    <div style={{ maxWidth: 720 }}>
+      {/* Add cleaner */}
+      <form onSubmit={add} style={{ ...cardStyle, marginBottom: 16 }}>
+        <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)', marginBottom: 10 }}>Add a cleaner</div>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name *" style={adminInput} />
+          <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" style={adminInput} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone *" type="tel" style={adminInput} />
+          <button type="submit" disabled={busy} className="btn-dark justify-center" style={{ opacity: busy ? 0.6 : 1 }}>
+            {busy ? 'Adding…' : 'Add'}
+          </button>
+        </div>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 8 }}>
+          Job offers are texted to their phone. After adding, copy their private job link and send it to them once — they bookmark it.
+        </p>
+      </form>
+
+      {/* List */}
+      {cleaners.length === 0 ? (
+        <Empty>No cleaners yet — add your first above.</Empty>
+      ) : (
+        <div className="space-y-3">
+          {cleaners.map((c) => (
+            <div key={c.id} style={cardStyle} className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <strong style={{ color: c.status === 'active' ? 'var(--forest)' : 'var(--text-muted)' }}>
+                  {c.firstName} {c.lastName}
+                </strong>
+                {c.status === 'inactive' && <span style={{ fontSize: '0.7rem', color: '#c0392b', marginLeft: 8 }}>inactive</span>}
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                  <a href={`tel:${c.phone}`} style={{ color: 'var(--forest)' }}>{c.phone}</a>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => copy(c)} className="btn-ghost" style={{ color: 'var(--forest)', borderColor: 'var(--border)', padding: '8px 14px', fontSize: '0.78rem', cursor: 'pointer' }}>
+                  {copied === c.id ? 'Copied ✓' : 'Copy job link'}
+                </button>
+                <button onClick={() => toggleActive(c)} className="btn-ghost" style={{ color: c.status === 'active' ? '#c0392b' : '#16a34a', borderColor: 'var(--border)', padding: '8px 14px', fontSize: '0.78rem', cursor: 'pointer' }}>
+                  {c.status === 'active' ? 'Deactivate' : 'Reactivate'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const adminInput: React.CSSProperties = {
+  padding: '10px 12px', borderRadius: 10, border: '1px solid var(--border)', background: '#fff',
+  color: 'var(--forest)', fontSize: '0.9rem', outline: 'none',
+};
 
 /** Site tab: feature toggles. Pages stay hidden on the site until enabled here. */
 function SiteTab({ token }: { token: string }) {

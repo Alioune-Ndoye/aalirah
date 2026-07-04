@@ -29,6 +29,8 @@ export type Booking = {
   promoCode?: string;
   status: BookingStatus;
   createdAt: string;
+  cleanerId?: string | { _id: string; firstName: string };
+  dispatch?: DispatchStatus;
 };
 
 export type PendingReview = {
@@ -134,6 +136,65 @@ export async function updateCustomer(token: string, id: string, patch: Partial<A
   if (!res.ok) return null;
   const data = await res.json();
   return data.customer || null;
+}
+
+/* ── Cleaners / crew dispatch ───────────────────────────── */
+
+export type DispatchStatus = 'none' | 'offered' | 'accepted' | 'declined' | 'on_the_way' | 'in_progress' | 'done';
+
+export type AdminCleaner = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  token: string;
+  status: 'active' | 'inactive';
+  notes: string;
+  createdAt: string;
+};
+
+export async function listCleaners(token: string): Promise<AdminCleaner[]> {
+  const res = await fetch(`${API_URL}/api/admin/cleaners`, { headers: auth(token) });
+  if (!res.ok) return [];
+  return (await res.json()).cleaners || [];
+}
+
+export async function createCleaner(
+  token: string,
+  data: { firstName: string; lastName?: string; phone: string; email?: string }
+): Promise<AdminCleaner | null> {
+  const res = await fetch(`${API_URL}/api/admin/cleaners`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) return null;
+  return (await res.json()).cleaner || null;
+}
+
+export async function updateCleaner(
+  token: string,
+  id: string,
+  patch: Partial<Pick<AdminCleaner, 'firstName' | 'lastName' | 'phone' | 'email' | 'notes' | 'status'>>
+): Promise<AdminCleaner | null> {
+  const res = await fetch(`${API_URL}/api/admin/cleaners/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) return null;
+  return (await res.json()).cleaner || null;
+}
+
+/** Offer a booking to a cleaner (texts them a job offer). */
+export async function assignCleaner(token: string, bookingId: string, cleanerId: string): Promise<boolean> {
+  const res = await fetch(`${API_URL}/api/admin/cleaners/assign/${bookingId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify({ cleanerId }),
+  });
+  return res.ok;
 }
 
 export type SiteSettingsPatch = { showGuarantee?: boolean; showSpecials?: boolean };

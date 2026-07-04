@@ -18,6 +18,8 @@ type Booking = {
   estimatedTotal?: number;
   extras?: string[];
   createdAt: string;
+  dispatch?: 'none' | 'offered' | 'accepted' | 'declined' | 'on_the_way' | 'in_progress' | 'done';
+  cleanerId?: { firstName?: string } | string | null;
 };
 
 const TIER_LABEL: Record<string, string> = { standard: 'Standard', silver: 'Silver Member', gold: 'Gold Member' };
@@ -127,7 +129,20 @@ function PerkCard({ label, value, icon }: { label: string; value: string; icon: 
   );
 }
 
+/** Customer-friendly live status line for the crew dispatch state. */
+function crewStatus(b: Booking): { text: string; color: string } | null {
+  const name = (typeof b.cleanerId === 'object' && b.cleanerId?.firstName) || 'Your cleaner';
+  switch (b.dispatch) {
+    case 'accepted': return { text: `${name} is confirmed for this clean`, color: '#16a34a' };
+    case 'on_the_way': return { text: `🚗 ${name} is on the way!`, color: '#7c3aed' };
+    case 'in_progress': return { text: `✨ ${name} is cleaning now`, color: '#b8860b' };
+    case 'done': return { text: `Completed by ${name}`, color: '#16a34a' };
+    default: return null; // offered/declined are internal — customer sees nothing yet
+  }
+}
+
 function BookingRow({ b }: { b: Booking }) {
+  const crew = crewStatus(b);
   return (
     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 16 }} className="flex flex-wrap items-center justify-between gap-3">
       <div>
@@ -138,6 +153,11 @@ function BookingRow({ b }: { b: Booking }) {
           {b.date ? `${b.date}${b.time ? ' · ' + b.time : ''}` : `Requested ${new Date(b.createdAt).toLocaleDateString()}`}
           {b.extras && b.extras.length > 0 && ` · ${b.extras.join(', ')}`}
         </div>
+        {crew && (
+          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: crew.color, marginTop: 4 }}>
+            {crew.text}
+          </div>
+        )}
       </div>
       <div className="text-right">
         <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>${(b.estimatedTotal || 0).toFixed(0)}</div>

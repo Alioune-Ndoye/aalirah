@@ -11,6 +11,7 @@ import LeaveReview from './pages/LeaveReview';
 import AdminDashboard from './pages/AdminDashboard';
 import Auth from './pages/Auth';
 import Account from './pages/Account';
+import Crew from './pages/Crew';
 import HowItWorks from './pages/HowItWorks';
 import Guarantee from './pages/Guarantee';
 import Specials from './pages/Specials';
@@ -39,6 +40,8 @@ export const routes: RouteRecord[] = [
       { path: 'login', element: <Auth mode="login" /> },
       { path: 'signup', element: <Auth mode="signup" /> },
       { path: 'account', element: <Account /> },
+      // Cleaner job page — private token link: /crew?k=<token>
+      { path: 'crew', element: <Crew /> },
       { path: 'how-it-works', element: <HowItWorks /> },
       { path: 'guarantee', element: <Guarantee /> },
       { path: 'specials', element: <Specials /> },
