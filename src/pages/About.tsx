@@ -43,7 +43,7 @@ export default function About() {
           { name: 'About', path: '/about' },
         ])}
       />
-      <PageHero label="Our Story" title="The Art of" em="Clean" minH="55vh" />
+      <PageHero label="Our Story" title="The Art of" em="Clean" minH="55vh" marquee />
 
       {/* Story */}
       <section className="bg-ivory py-28">
