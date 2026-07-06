@@ -450,7 +450,7 @@ export default function Book() {
                               onClick={() => toggleExtra(ex.id)}
                               style={{
                                 border: `1.5px solid ${on ? 'var(--mint)' : 'var(--border)'}`,
-                                borderRadius: 14, padding: '16px 12px', display: 'flex', flexDirection: 'column',
+                                borderRadius: 12, padding: '16px 12px', display: 'flex', flexDirection: 'column',
                                 alignItems: 'center', justifyContent: 'center', textAlign: 'center',
                                 background: on ? 'rgba(198, 167, 105,0.08)' : '#fff', cursor: 'pointer', transition: 'all .22s',
                                 boxShadow: on ? '0 0 0 1px var(--mint)' : 'none',
@@ -544,7 +544,7 @@ export default function Book() {
 
                     {/* 11 — Payment */}
                     <FormSection num={11} title="Payment">
-                      <div style={{ border: '1.5px solid var(--border)', borderRadius: 16, padding: 24, background: 'var(--surface-alt)', maxWidth: 480 }}>
+                      <div style={{ border: '1.5px solid var(--border)', borderRadius: 12, padding: 24, background: 'var(--surface-alt)', maxWidth: 480 }}>
                         <div style={{ marginBottom: 16 }}>
                           <label className="form-label">Card Number</label>
                           <div style={{ position: 'relative' }}>
@@ -597,7 +597,7 @@ export default function Book() {
               </div>
             ) : (
               <div className="lg:col-span-2">
-                <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.18)', borderRadius: 24, padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.18)', borderRadius: 16, padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,var(--mint),var(--mint-light))' }} />
                   <div style={{ width: 64, height: 64, background: 'rgba(198, 167, 105,0.12)', border: '1px solid rgba(198, 167, 105,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', color: 'var(--mint)' }}>
                     <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
@@ -615,7 +615,7 @@ export default function Book() {
             <div className="space-y-6">
 
               {/* Booking Summary */}
-              <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.15)', borderRadius: 20, padding: 28, position: 'sticky', top: 88, overflow: 'hidden' }}>
+              <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.15)', borderRadius: 14, padding: 28, position: 'sticky', top: 88, overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,var(--mint),transparent)' }} />
                 <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 20 }}>Booking Summary</div>
 
@@ -653,16 +653,19 @@ export default function Book() {
                   {calc.discountVal > 0 && <InvoiceRow label="Frequency Discount" value={'-' + money(calc.discountVal)} mint />}
                   {calc.promoVal > 0 && <InvoiceRow label="Promo Code" value={'-' + money(calc.promoVal)} mint />}
                   {tip > 0 && <InvoiceRow label="Tip" value={money(tip)} />}
-                  <InvoiceRow label="Sales Tax (8.875%)" value={money(calc.tax)} />
+                  <InvoiceRow label={`Sales Tax (${(TAX_RATE * 100).toFixed(2)}%)`} value={money(calc.tax)} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderTop: '1px solid rgba(198, 167, 105,0.18)', paddingTop: 14 }}>
                     <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)' }}>Total</span>
                     <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '2.4rem', fontWeight: 800, color: 'var(--mint)', lineHeight: 1 }}>{money(calc.total)}</span>
+                  </div>
+                  <div style={{ textAlign: 'right', fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', marginTop: 6 }}>
+                    Estimated time on site: {durationStr(calc.totalHours)}
                   </div>
                 </div>
               </div>
 
               {/* Value Props */}
-              <div style={{ background: '#fff', border: '1.5px solid var(--border)', borderRadius: 20, padding: 24 }}>
+              <div style={{ background: '#fff', border: '1.5px solid var(--border)', borderRadius: 14, padding: 24 }}>
                 {valueProps.map((p, i) => {
                   const last = i === valueProps.length - 1;
                   return (
