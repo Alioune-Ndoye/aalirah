@@ -70,7 +70,7 @@ export default function Reviews() {
             {reviewCount > 0 && (
               <div
                 className="inline-flex items-center gap-4 px-7 py-5 rounded-2xl"
-                style={{ background: '#fff', border: '1px solid var(--border)', boxShadow: '0 2px 20px rgba(44,44,44,0.06)' }}
+                style={{ background: '#fff', border: '1px solid var(--border)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
               >
                 <div className="text-left">
                   <div className="flex items-center gap-1" style={{ color: 'var(--mint)' }}>
@@ -110,7 +110,7 @@ export default function Reviews() {
             <Reveal>
               <Link
                 to="/review"
-                className="h-full rounded-3xl overflow-hidden flex flex-col items-center justify-center text-center p-10 group"
+                className="h-full rounded-2xl overflow-hidden flex flex-col items-center justify-center text-center p-10 group"
                 style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.25)', minHeight: 260, textDecoration: 'none' }}
               >
                 <span
@@ -135,7 +135,7 @@ export default function Reviews() {
             const poster = t.poster ?? (t.video ? autoPoster(t.video) : null);
             return (
             <Reveal key={t.id ?? t.name} delay={(i % 2) * 0.08}>
-              <div className="h-full rounded-3xl overflow-hidden flex flex-col" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+              <div className="h-full rounded-2xl overflow-hidden flex flex-col" style={{ background: '#fff', border: '1px solid var(--border)' }}>
                 {t.video && (
                   <button
                     type="button"

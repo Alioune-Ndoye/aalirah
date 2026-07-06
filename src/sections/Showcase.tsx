@@ -45,7 +45,7 @@ export default function Showcase() {
             <BeforeAfter
               before={c.before}
               after={c.after}
-              className="rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
+              className="rounded-2xl md:rounded-2xl overflow-hidden shadow-2xl"
             />
             <div>
               <div

@@ -73,7 +73,7 @@ export default function ServicePage({ slug }: { slug: string }) {
           <Reveal dir="right">
             <div
               style={{
-                borderRadius: 20,
+                borderRadius: 14,
                 overflow: 'hidden',
                 boxShadow: '0 24px 80px rgba(26, 23, 20,0.3)',
                 aspectRatio: '4/3',

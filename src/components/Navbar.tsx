@@ -65,7 +65,7 @@ export default function Navbar() {
                 // which was the main desktop scroll lag. Dropping it keeps scrolling smooth.
                 background: 'rgba(14, 12, 10,0.96)',
                 borderBottom: '1px solid rgba(198, 167, 105,0.12)',
-                boxShadow: '0 4px 30px rgba(0,0,0,0.25)',
+                boxShadow: '0 1px 12px rgba(0,0,0,0.15)',
               }
             : { background: 'transparent' }
         }
@@ -152,9 +152,9 @@ export default function Navbar() {
               overflowY: 'auto',
               background: 'rgba(14, 12, 10,0.98)',
               border: '1px solid rgba(198, 167, 105,0.15)',
-              borderRadius: 20,
+              borderRadius: 14,
               zIndex: 60,
-              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0 6px' }}>

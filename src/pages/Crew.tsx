@@ -49,7 +49,7 @@ export default function Crew() {
           {state === 'loading' && <p style={{ color: 'var(--text-muted)' }}>Loading your jobs…</p>}
 
           {state === 'invalid' && (
-            <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32, textAlign: 'center' }}>
+            <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 32, textAlign: 'center' }}>
               <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.8rem', color: 'var(--forest)', marginBottom: 8 }}>
                 Link not valid
               </h1>
@@ -110,10 +110,10 @@ function JobCard({ job, busy, onAction }: { job: CrewJob; busy: boolean; onActio
   );
 
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 18 }}>
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 18 }}>
       <div className="flex items-center justify-between gap-3 mb-2">
         <strong style={{ color: 'var(--forest)', fontFamily: "'Space Grotesk',sans-serif" }}>{when || 'Date TBD'}</strong>
-        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: c.color, border: `1px solid ${c.color}`, borderRadius: 20, padding: '3px 10px' }}>
+        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: c.color, border: `1px solid ${c.color}`, borderRadius: 14, padding: '3px 10px' }}>
           {c.label}
         </span>
       </div>

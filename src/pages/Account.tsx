@@ -129,7 +129,7 @@ export default function Account() {
 
 function PerkCard({ label, value, icon }: { label: string; value: string; icon: IconName }) {
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 14 }}>
       <span style={{ color: 'var(--mint-dark)' }}><Icon name={icon} size={22} /></span>
       <div>
         <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>{label}</div>
@@ -154,7 +154,7 @@ function crewStatus(b: Booking): { text: string; color: string } | null {
 function BookingRow({ b }: { b: Booking }) {
   const crew = crewStatus(b);
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 16 }} className="flex flex-wrap items-center justify-between gap-3">
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 16 }} className="flex flex-wrap items-center justify-between gap-3">
       <div>
         <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>
           {b.frequency || 'Cleaning'} · {b.size || ''}
@@ -230,7 +230,7 @@ function PropertiesSection({ bookings }: { bookings: Booking[] }) {
         </div>
 
         {adding && (
-          <form onSubmit={add} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 16, marginBottom: 16 }}>
+          <form onSubmit={add} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Label (e.g. Unit 2B)" style={pInput} />
               <input value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} placeholder="Street address *" required style={pInput} />
@@ -279,7 +279,7 @@ function PropertyCard({ p, bookings, onArchive }: { p: Property; bookings: Booki
         : { text: 'No cleanings yet', color: 'var(--text-muted)' };
 
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 18 }}>
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 18 }}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>{p.label}</div>
@@ -341,7 +341,7 @@ function ProfileSection({ customer, updateProfile }: { customer: ReturnType<type
     <section className="bg-ivory py-14">
       <div className="wrap" style={{ maxWidth: 720 }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.8rem', color: 'var(--forest)', marginBottom: 16 }}>Profile & settings</h2>
-        <form onSubmit={save} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 24 }}>
+        <form onSubmit={save} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 24 }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
             <input value={form.firstName} onChange={set('firstName')} placeholder="First name" style={field} />
             <input value={form.lastName} onChange={set('lastName')} placeholder="Last name" style={field} />

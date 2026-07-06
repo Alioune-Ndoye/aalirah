@@ -241,7 +241,7 @@ export default function LeaveReview() {
         <form
           onSubmit={onSubmit}
           className="wrap"
-          style={{ maxWidth: 680, background: '#fff', border: '1px solid var(--border)', borderRadius: 24, padding: 'clamp(24px,4vw,40px)' }}
+          style={{ maxWidth: 680, background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 'clamp(24px,4vw,40px)' }}
         >
           {/* Rating */}
           <label className="block mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: 'var(--forest)' }}>
@@ -320,7 +320,7 @@ export default function LeaveReview() {
 
             <div
               style={{
-                borderRadius: 16,
+                borderRadius: 12,
                 border: '1px dashed var(--border)',
                 background: 'var(--cream)',
                 padding: 16,

@@ -72,7 +72,7 @@ export default function VideoModal({ src, label, onClose }: Props) {
         style={{
           width: 'min(900px, 100%)',
           aspectRatio: '16 / 9',
-          borderRadius: 18,
+          borderRadius: 14,
           overflow: 'hidden',
           background: '#000',
           boxShadow: '0 30px 80px rgba(0,0,0,0.5)',

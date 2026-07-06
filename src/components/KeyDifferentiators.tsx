@@ -65,10 +65,10 @@ export default function KeyDifferentiators() {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: 'var(--ivory)', borderRadius: 24, maxWidth: 520, width: '100%',
+          background: 'var(--ivory)', borderRadius: 16, maxWidth: 520, width: '100%',
           padding: 'clamp(24px,4vw,36px)', position: 'relative',
           border: '1px solid rgba(198, 167, 105,0.35)',
-          boxShadow: '0 30px 80px -20px rgba(0,0,0,0.5)',
+          boxShadow: '0 12px 32px rgba(0,0,0,0.16)',
           animation: 'kdPop 0.4s cubic-bezier(0.22,1,0.36,1)',
         }}
       >

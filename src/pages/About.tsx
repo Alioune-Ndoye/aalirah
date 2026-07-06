@@ -71,7 +71,7 @@ export default function About() {
             <Reveal dir="right">
               <div className="relative h-[440px]">
                 <motion.div
-                  className="absolute rounded-3xl overflow-hidden shadow-2xl"
+                  className="absolute rounded-2xl overflow-hidden shadow-2xl"
                   style={{ width: '72%', height: '85%', top: 0, left: 0 }}
                   initial={{ opacity: 0, scale: 0.94 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -156,10 +156,10 @@ export default function About() {
               <motion.div
                 key={v.n}
                 variants={cardIn}
-                whileHover={{ y: -10, boxShadow: '0 34px 70px -28px rgba(44,44,44,0.35)', borderColor: 'var(--mint)' }}
+                whileHover={{ y: -10, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', borderColor: 'var(--mint)' }}
                 transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-                className="group relative overflow-hidden rounded-3xl p-8 h-full"
-                style={{ background: 'var(--ivory)', border: '1px solid var(--sand)', boxShadow: '0 2px 20px rgba(44,44,44,0.05)' }}
+                className="group relative overflow-hidden rounded-2xl p-8 h-full"
+                style={{ background: 'var(--ivory)', border: '1px solid var(--sand)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
               >
                 {/* Animated accent bar (grows on hover) */}
                 <span
@@ -207,8 +207,8 @@ export default function About() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
             {/* Map */}
             <motion.div
-              className="lg:col-span-3 rounded-3xl overflow-hidden"
-              style={{ border: '1px solid var(--sand)', boxShadow: '0 20px 60px -30px rgba(44,44,44,0.4)', minHeight: 380 }}
+              className="lg:col-span-3 rounded-2xl overflow-hidden"
+              style={{ border: '1px solid var(--sand)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', minHeight: 380 }}
               initial={{ opacity: 0, scale: 0.96 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

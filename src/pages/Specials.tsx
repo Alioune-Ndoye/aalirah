@@ -31,7 +31,7 @@ export default function Specials() {
         <div className="wrap grid grid-cols-1 md:grid-cols-2 gap-6">
           {specials.map((s, i) => (
             <Reveal key={s.title} delay={(i % 2) * 0.08}>
-              <div className="relative h-full rounded-3xl p-8" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+              <div className="relative h-full rounded-2xl p-8" style={{ background: '#fff', border: '1px solid var(--border)' }}>
                 {s.badge && (
                   <span
                     className="absolute top-6 right-6 inline-flex items-center px-3 py-1 rounded-full"

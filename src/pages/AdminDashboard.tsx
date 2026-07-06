@@ -86,7 +86,7 @@ export default function AdminDashboard() {
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32, maxWidth: 560, margin: '40px auto' }}>
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 32, maxWidth: 560, margin: '40px auto' }}>
       <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)', marginBottom: 10 }}>{title}</h2>
       <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>{children}</p>
     </div>
@@ -109,7 +109,7 @@ function Login({ onSuccess }: { onSuccess: (t: string) => void }) {
   };
 
   return (
-    <form onSubmit={submit} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 16, padding: 32, maxWidth: 420, margin: '60px auto' }}>
+    <form onSubmit={submit} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 32, maxWidth: 420, margin: '60px auto' }}>
       <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2rem', color: 'var(--forest)', marginBottom: 6 }}>Dashboard</h1>
       <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 20 }}>Enter your admin token to continue.</p>
       <input
@@ -355,7 +355,7 @@ function CustomersTab({ token }: { token: string }) {
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{selected.email} · #{selected.accountNumber}</div>
               </div>
-              <span style={{ fontSize: '0.72rem', padding: '4px 10px', borderRadius: 20, background: selected.status === 'active' ? 'rgba(22,163,74,0.12)' : 'rgba(192,57,43,0.12)', color: selected.status === 'active' ? '#16a34a' : '#c0392b' }}>
+              <span style={{ fontSize: '0.72rem', padding: '4px 10px', borderRadius: 14, background: selected.status === 'active' ? 'rgba(22,163,74,0.12)' : 'rgba(192,57,43,0.12)', color: selected.status === 'active' ? '#16a34a' : '#c0392b' }}>
                 {selected.status}
               </span>
             </div>
@@ -525,12 +525,12 @@ function BookingCard({ b, onStatus, cleaners, onAssign }: {
 }
 
 const cardStyle: React.CSSProperties = {
-  background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 18,
+  background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 18,
 };
 
 function Stat({ label, value, accent }: { label: string; value: string | number; accent?: string }) {
   return (
-    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 20px' }}>
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '18px 20px' }}>
       <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 800, fontSize: '1.6rem', color: accent || 'var(--forest)' }}>{value}</div>
       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>{label}</div>
     </div>
@@ -558,7 +558,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
     <button
       onClick={onClick}
       style={{
-        padding: '5px 12px', borderRadius: 20, fontSize: '0.78rem', cursor: 'pointer', textTransform: 'capitalize',
+        padding: '5px 12px', borderRadius: 14, fontSize: '0.78rem', cursor: 'pointer', textTransform: 'capitalize',
         background: active ? 'rgba(198, 167, 105,0.18)' : '#fff', color: active ? 'var(--mint-dark)' : 'var(--text-muted)',
         border: '1px solid var(--border)',
       }}
@@ -699,7 +699,7 @@ function SiteTab({ token }: { token: string }) {
             disabled={saving}
             aria-pressed={settings[r.key]}
             style={{
-              padding: '8px 18px', borderRadius: 20, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer',
+              padding: '8px 18px', borderRadius: 14, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer',
               fontFamily: "'Space Grotesk',sans-serif", minWidth: 92,
               background: settings[r.key] ? '#16a34a' : '#fff',
               color: settings[r.key] ? '#fff' : 'var(--text-muted)',

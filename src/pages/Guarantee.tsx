@@ -70,7 +70,7 @@ export default function Guarantee() {
         <div className="wrap grid grid-cols-1 md:grid-cols-2 gap-6">
           {promises.map((p, i) => (
             <Reveal key={p.title} delay={(i % 2) * 0.08}>
-              <div className="flex gap-5 h-full rounded-3xl p-8" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+              <div className="flex gap-5 h-full rounded-2xl p-8" style={{ background: '#fff', border: '1px solid var(--border)' }}>
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'var(--forest)', color: 'var(--mint)' }}>
                   <Icon name={p.icon} size={22} strokeWidth={1.6} />
                 </div>

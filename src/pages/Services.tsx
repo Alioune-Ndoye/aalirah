@@ -48,8 +48,8 @@ export default function Services() {
               <Reveal key={s.slug} delay={(i % 3) * 0.06}>
                 <Link
                   to={servicePath(s.slug)}
-                  className="group block h-full rounded-3xl overflow-hidden bg-white transition-all duration-300"
-                  style={{ border: '1px solid var(--border)', boxShadow: '0 2px 16px rgba(44,44,44,0.04)' }}
+                  className="group block h-full rounded-2xl overflow-hidden bg-white transition-all duration-300"
+                  style={{ border: '1px solid var(--border)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
                 >
                   <div className="relative" style={{ aspectRatio: '16/10', overflow: 'hidden' }}>
                     <img

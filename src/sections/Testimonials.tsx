@@ -51,7 +51,7 @@ export default function Testimonials() {
           {hasReviews && (
             <div
               className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl mx-auto"
-              style={{ background: '#fff', border: '1px solid var(--border)', boxShadow: '0 2px 16px rgba(44,44,44,0.06)' }}
+              style={{ background: '#fff', border: '1px solid var(--border)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
             >
               <span style={{ color: 'var(--mint)', display: 'inline-flex' }}>
                 <Icon name="star" size={18} fill />

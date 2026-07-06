@@ -34,7 +34,7 @@ export default function HowItWorks() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {processSteps.map((s, i) => (
               <Reveal key={s.n} delay={(i % 2) * 0.08}>
-                <div className="relative h-full rounded-3xl p-9" style={{ background: '#fff', border: '1px solid var(--border)' }}>
+                <div className="relative h-full rounded-2xl p-9" style={{ background: '#fff', border: '1px solid var(--border)' }}>
                   <span
                     style={{ position: 'absolute', top: 20, right: 26, fontFamily: "'Space Grotesk', sans-serif", fontSize: '4.5rem', fontWeight: 800, color: 'rgba(198, 167, 105,0.1)', lineHeight: 1, userSelect: 'none' }}
                   >
