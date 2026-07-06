@@ -78,12 +78,12 @@ export default function Testimonials() {
                   ))}
                 </div>
                 <blockquote className="t-quote">"{t.text}"</blockquote>
-                <div className="flex items-center gap-4 mt-10 pt-8" style={{ borderTop: '1px solid rgba(198,167,105,0.12)' }}>
+                <div className="flex items-center gap-4 mt-10 pt-8" style={{ borderTop: '1px solid rgba(198, 167, 105,0.12)' }}>
                   <div
                     className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
                     style={{
-                      background: 'rgba(198,167,105,0.15)',
-                      border: '1px solid rgba(198,167,105,0.3)',
+                      background: 'rgba(198, 167, 105,0.15)',
+                      border: '1px solid rgba(198, 167, 105,0.3)',
                       color: 'var(--mint)',
                       fontFamily: "'Space Grotesk', sans-serif",
                     }}
@@ -101,7 +101,7 @@ export default function Testimonials() {
                       fontSize: '3.5rem',
                       fontWeight: 800,
                       letterSpacing: '-0.04em',
-                      color: 'rgba(198,167,105,0.08)',
+                      color: 'rgba(198, 167, 105,0.08)',
                       lineHeight: 1,
                       userSelect: 'none',
                     }}
@@ -120,7 +120,7 @@ export default function Testimonials() {
            <div style={{ maxWidth: 560, margin: '0 auto' }}>
             <div
               className="flex items-center justify-center mx-auto mb-6"
-              style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(198,167,105,0.12)', border: '1px solid rgba(198,167,105,0.3)', color: 'var(--mint-dark)' }}
+              style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(198, 167, 105,0.12)', border: '1px solid rgba(198, 167, 105,0.3)', color: 'var(--mint-dark)' }}
             >
               <Icon name="star" size={26} fill />
             </div>

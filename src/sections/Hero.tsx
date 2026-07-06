@@ -171,8 +171,8 @@ export default function Hero() {
               <div
                 className="absolute bottom-8 left-6 right-6 flex items-center gap-4 rounded-2xl p-5"
                 style={{
-                  background: 'rgba(26,23,20,0.92)',
-                  border: '1px solid rgba(198,167,105,0.2)',
+                  background: 'rgba(26, 23, 20,0.92)',
+                  border: '1px solid rgba(198, 167, 105,0.2)',
                 }}
               >
                 <div

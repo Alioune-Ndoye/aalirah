@@ -63,8 +63,8 @@ export default function Navbar() {
                 // Solid (was backdrop-filter blur+saturate) — the bg is ~96% opaque,
                 // so the blur was nearly invisible but re-rendered every scroll frame,
                 // which was the main desktop scroll lag. Dropping it keeps scrolling smooth.
-                background: 'rgba(14,12,10,0.96)',
-                borderBottom: '1px solid rgba(198,167,105,0.12)',
+                background: 'rgba(14, 12, 10,0.96)',
+                borderBottom: '1px solid rgba(198, 167, 105,0.12)',
                 boxShadow: '0 4px 30px rgba(0,0,0,0.25)',
               }
             : { background: 'transparent' }
@@ -150,8 +150,8 @@ export default function Navbar() {
               right: 16,
               maxHeight: 'calc(100vh - 24px)',
               overflowY: 'auto',
-              background: 'rgba(14,12,10,0.98)',
-              border: '1px solid rgba(198,167,105,0.15)',
+              background: 'rgba(14, 12, 10,0.98)',
+              border: '1px solid rgba(198, 167, 105,0.15)',
               borderRadius: 20,
               zIndex: 60,
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)',

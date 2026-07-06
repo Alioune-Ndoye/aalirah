@@ -19,12 +19,12 @@ const goldText: CSSProperties = {
 };
 const darkCard: CSSProperties = {
   background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(198,167,105,0.12)',
+  border: '1px solid rgba(198, 167, 105,0.12)',
 };
 const popularCard: CSSProperties = {
-  background: 'rgba(198,167,105,0.07)',
-  border: '1px solid rgba(198,167,105,0.5)',
-  boxShadow: '0 0 0 1px rgba(198,167,105,0.18), 0 24px 60px -24px rgba(198,167,105,0.45)',
+  background: 'rgba(198, 167, 105,0.07)',
+  border: '1px solid rgba(198, 167, 105,0.5)',
+  boxShadow: '0 0 0 1px rgba(198, 167, 105,0.18), 0 24px 60px -24px rgba(198, 167, 105,0.45)',
 };
 const popularBadge: CSSProperties = {
   fontFamily: "'Space Grotesk', sans-serif",
@@ -36,7 +36,7 @@ const popularBadge: CSSProperties = {
   background: 'var(--mint)',
   padding: '5px 12px',
   borderRadius: 100,
-  boxShadow: '0 6px 20px rgba(198,167,105,0.4)',
+  boxShadow: '0 6px 20px rgba(198, 167, 105,0.4)',
 };
 
 /* Faint blueprint grid that backs every dark section. */
@@ -47,7 +47,7 @@ function GridBg() {
       aria-hidden="true"
       style={{
         backgroundImage:
-          'linear-gradient(rgba(198,167,105,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(198,167,105,0.05) 1px, transparent 1px)',
+          'linear-gradient(rgba(198, 167, 105,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(198, 167, 105,0.05) 1px, transparent 1px)',
         backgroundSize: '64px 64px',
       }}
     />
@@ -135,7 +135,7 @@ export default function Pricing() {
             {other.map((s, i) => (
               <Reveal key={s.slug} delay={(i % 3) * 0.06}>
                 <div className="rounded-2xl p-7 h-full flex items-start gap-4" style={darkCard}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint)' }}>
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(198, 167, 105,0.12)', color: 'var(--mint)' }}>
                     <Icon name={s.icon} size={20} strokeWidth={1.6} />
                   </div>
                   <div>
@@ -163,7 +163,7 @@ export default function Pricing() {
             </h3>
             <div className="space-y-3">
               {addons.map((a) => (
-                <div key={a.id} className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid rgba(198,167,105,0.12)' }}>
+                <div key={a.id} className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid rgba(198, 167, 105,0.12)' }}>
                   <span className="flex items-center gap-3" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>
                     <Icon name="check" size={15} strokeWidth={2.4} className="text-mint" />
                     {a.label}

@@ -59,17 +59,17 @@ export default function Services() {
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(14,12,10,0.55), transparent 60%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(14, 12, 10,0.55), transparent 60%)' }} />
                     <span
                       className="absolute top-3 left-3 inline-flex items-center px-3 py-1 rounded-full text-white"
-                      style={{ background: 'rgba(198,167,105,0.9)', fontFamily: "'Space Grotesk', sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--forest)' }}
+                      style={{ background: 'rgba(198, 167, 105,0.9)', fontFamily: "'Space Grotesk', sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--forest)' }}
                     >
                       {s.tag}
                     </span>
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint-dark)' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(198, 167, 105,0.12)', color: 'var(--mint-dark)' }}>
                         <Icon name={s.icon} size={19} strokeWidth={1.6} />
                       </div>
                       <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '1.05rem', color: 'var(--forest)' }}>
@@ -95,7 +95,7 @@ export default function Services() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage:
-              'linear-gradient(rgba(198,167,105,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(198,167,105,0.06) 1px, transparent 1px)',
+              'linear-gradient(rgba(198, 167, 105,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(198, 167, 105,0.06) 1px, transparent 1px)',
             backgroundSize: '64px 64px',
           }}
         />

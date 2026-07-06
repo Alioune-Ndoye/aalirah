@@ -115,8 +115,8 @@ export default function AreaPage({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reasons.slice(0, 3).map((r) => (
               <Reveal key={r.n}>
-                <div className="step-card h-full" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(198,167,105,0.12)' }}>
-                  <div className="step-icon" style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint)' }}>
+                <div className="step-card h-full" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(198, 167, 105,0.12)' }}>
+                  <div className="step-icon" style={{ background: 'rgba(198, 167, 105,0.12)', color: 'var(--mint)' }}>
                     <Icon name={r.icon} size={22} strokeWidth={1.6} />
                   </div>
                   <h3 className="step-title" style={{ color: '#fff' }}>

@@ -12,9 +12,9 @@ export default function MobileCTA() {
     <div
       className="md:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-2 gap-2 px-3 py-3"
       style={{
-        background: 'rgba(14,12,10,0.92)',
+        background: 'rgba(14, 12, 10,0.92)',
         backdropFilter: 'blur(16px)',
-        borderTop: '1px solid rgba(198,167,105,0.18)',
+        borderTop: '1px solid rgba(198, 167, 105,0.18)',
         paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))',
       }}
     >

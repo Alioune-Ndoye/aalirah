@@ -53,7 +53,7 @@ export default function Guarantee() {
       <section className="bg-ivory py-24 md:py-28">
         <div className="wrap max-w-3xl text-center mb-16">
           <Reveal>
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-7" style={{ background: 'rgba(198,167,105,0.14)', color: 'var(--mint-dark)' }}>
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-7" style={{ background: 'rgba(198, 167, 105,0.14)', color: 'var(--mint-dark)' }}>
               <Icon name="shield" size={36} strokeWidth={1.6} />
             </div>
             <h2 className="section-heading mb-6">

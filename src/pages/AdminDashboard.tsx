@@ -559,7 +559,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
       onClick={onClick}
       style={{
         padding: '5px 12px', borderRadius: 20, fontSize: '0.78rem', cursor: 'pointer', textTransform: 'capitalize',
-        background: active ? 'rgba(198,167,105,0.18)' : '#fff', color: active ? 'var(--mint-dark)' : 'var(--text-muted)',
+        background: active ? 'rgba(198, 167, 105,0.18)' : '#fff', color: active ? 'var(--mint-dark)' : 'var(--text-muted)',
         border: '1px solid var(--border)',
       }}
     >

@@ -111,11 +111,11 @@ export default function Reviews() {
               <Link
                 to="/review"
                 className="h-full rounded-3xl overflow-hidden flex flex-col items-center justify-center text-center p-10 group"
-                style={{ background: 'var(--forest)', border: '1px solid rgba(198,167,105,0.25)', minHeight: 260, textDecoration: 'none' }}
+                style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.25)', minHeight: 260, textDecoration: 'none' }}
               >
                 <span
                   className="flex items-center justify-center mb-5 transition-transform group-hover:scale-110"
-                  style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(198,167,105,0.4)' }}
+                  style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(198, 167, 105,0.4)' }}
                 >
                   <Icon name="camera" size={26} className="text-mint" />
                 </span>
@@ -185,7 +185,7 @@ export default function Reviews() {
                   {t.pending && (
                     <span
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
-                      style={{ background: 'rgba(198,167,105,0.15)', color: 'var(--mint-dark)', fontFamily: "'Space Grotesk', sans-serif" }}
+                      style={{ background: 'rgba(198, 167, 105,0.15)', color: 'var(--mint-dark)', fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       Just submitted
                     </span>
@@ -209,7 +209,7 @@ export default function Reviews() {
                   ) : (
                     <div
                       className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                      style={{ background: 'rgba(198,167,105,0.15)', border: '1px solid rgba(198,167,105,0.3)', color: 'var(--mint-dark)', fontFamily: "'Space Grotesk', sans-serif" }}
+                      style={{ background: 'rgba(198, 167, 105,0.15)', border: '1px solid rgba(198, 167, 105,0.3)', color: 'var(--mint-dark)', fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       {initials(t.name)}
                     </div>

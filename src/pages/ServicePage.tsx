@@ -75,7 +75,7 @@ export default function ServicePage({ slug }: { slug: string }) {
               style={{
                 borderRadius: 20,
                 overflow: 'hidden',
-                boxShadow: '0 24px 80px rgba(26,23,20,0.3)',
+                boxShadow: '0 24px 80px rgba(26, 23, 20,0.3)',
                 aspectRatio: '4/3',
                 position: 'relative',
               }}

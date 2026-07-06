@@ -40,7 +40,7 @@ export default function Specials() {
                     {s.badge}
                   </span>
                 )}
-                <div className="w-13 h-13 rounded-2xl flex items-center justify-center mb-6" style={{ width: 52, height: 52, background: 'rgba(198,167,105,0.14)', color: 'var(--mint-dark)' }}>
+                <div className="w-13 h-13 rounded-2xl flex items-center justify-center mb-6" style={{ width: 52, height: 52, background: 'rgba(198, 167, 105,0.14)', color: 'var(--mint-dark)' }}>
                   <Icon name={s.icon} size={24} strokeWidth={1.6} />
                 </div>
                 <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.7rem', color: 'var(--forest)', marginBottom: 12, lineHeight: 1.2 }}>

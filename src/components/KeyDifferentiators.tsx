@@ -57,7 +57,7 @@ export default function KeyDifferentiators() {
       onClick={close}
       style={{
         position: 'fixed', inset: 0, zIndex: 90,
-        background: 'rgba(14,12,10,0.55)', backdropFilter: 'blur(6px)',
+        background: 'rgba(14, 12, 10,0.55)', backdropFilter: 'blur(6px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 18,
         animation: 'kdFade 0.35s ease',
       }}
@@ -67,7 +67,7 @@ export default function KeyDifferentiators() {
         style={{
           background: 'var(--ivory)', borderRadius: 24, maxWidth: 520, width: '100%',
           padding: 'clamp(24px,4vw,36px)', position: 'relative',
-          border: '1px solid rgba(198,167,105,0.35)',
+          border: '1px solid rgba(198, 167, 105,0.35)',
           boxShadow: '0 30px 80px -20px rgba(0,0,0,0.5)',
           animation: 'kdPop 0.4s cubic-bezier(0.22,1,0.36,1)',
         }}
@@ -96,7 +96,7 @@ export default function KeyDifferentiators() {
             <div key={p.title} className="flex gap-3 items-start">
               <span
                 className="flex items-center justify-center flex-shrink-0"
-                style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(198,167,105,0.14)', color: 'var(--mint-dark)' }}
+                style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(198, 167, 105,0.14)', color: 'var(--mint-dark)' }}
               >
                 <Icon name={p.icon} size={18} />
               </span>

@@ -42,7 +42,7 @@ export default function WhyChoose() {
           width: 500,
           height: 500,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(198,167,105,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(198, 167, 105,0.06) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
@@ -70,7 +70,7 @@ export default function WhyChoose() {
                     fontSize: '2.2rem',
                     fontWeight: 800,
                     letterSpacing: '-0.04em',
-                    color: 'rgba(198,167,105,0.22)',
+                    color: 'rgba(198, 167, 105,0.22)',
                     lineHeight: 1,
                     flexShrink: 0,
                     width: '2.5rem',
@@ -115,8 +115,8 @@ export default function WhyChoose() {
                 top: t.top,
                 bottom: t.bottom,
                 right: t.right,
-                background: 'rgba(26,23,20,0.92)',
-                border: '1px solid rgba(198,167,105,0.3)',
+                background: 'rgba(26, 23, 20,0.92)',
+                border: '1px solid rgba(198, 167, 105,0.3)',
                 color: 'var(--mint-light)',
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 600,

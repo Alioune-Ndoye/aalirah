@@ -92,7 +92,7 @@ export default function Auth({ mode }: { mode: 'login' | 'signup' }) {
 
       <section style={{ background: 'var(--forest)', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: 100, paddingBottom: 60 }}>
         <div className="wrap" style={{ maxWidth: 460 }}>
-          <div style={{ background: 'var(--ivory)', borderRadius: 24, padding: 'clamp(28px,5vw,44px)', border: '1px solid rgba(198,167,105,0.2)' }}>
+          <div style={{ background: 'var(--ivory)', borderRadius: 24, padding: 'clamp(28px,5vw,44px)', border: '1px solid rgba(198, 167, 105,0.2)' }}>
             {step === 'verify' ? (
               <>
                 <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem,5vw,2.6rem)', color: 'var(--forest)', marginBottom: 6 }}>

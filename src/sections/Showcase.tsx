@@ -39,7 +39,7 @@ export default function Showcase() {
                 color: 'var(--text-muted)',
               }}
             >
-              {String(i + 1).padStart(2, '0')} <span style={{ color: 'rgba(198,167,105,0.45)' }}>/</span>{' '}
+              {String(i + 1).padStart(2, '0')} <span style={{ color: 'rgba(198, 167, 105,0.45)' }}>/</span>{' '}
               {String(showcases.length).padStart(2, '0')}
             </div>
             <BeforeAfter

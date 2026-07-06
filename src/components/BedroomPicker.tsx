@@ -32,7 +32,7 @@ export default function BedroomPicker({
   const txt = dark ? '#fff' : 'var(--forest)';
   const sub = dark ? 'rgba(255,255,255,0.5)' : 'var(--text-muted)';
   const cardBg = dark ? 'rgba(255,255,255,0.04)' : '#fff';
-  const border = dark ? 'rgba(198,167,105,0.18)' : 'var(--border)';
+  const border = dark ? 'rgba(198, 167, 105,0.18)' : 'var(--border)';
 
   const min = 0;
   const max = bedroomRate.max;
@@ -46,9 +46,9 @@ export default function BedroomPicker({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: dark ? 'rgba(198,167,105,0.12)' : 'var(--surface-alt)',
+    background: dark ? 'rgba(198, 167, 105,0.12)' : 'var(--surface-alt)',
     color: dark ? 'var(--mint)' : 'var(--forest)',
-    border: `1px solid ${dark ? 'rgba(198,167,105,0.22)' : 'var(--border)'}`,
+    border: `1px solid ${dark ? 'rgba(198, 167, 105,0.22)' : 'var(--border)'}`,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.35 : 1,
     transition: 'background 0.2s, transform 0.15s',

@@ -37,8 +37,8 @@ export default function Contact() {
             <div
               className="flex items-center gap-2 rounded-full px-4 py-2 text-xs shadow-lg"
               style={{
-                background: 'rgba(26,23,20,0.95)',
-                border: '1px solid rgba(198,167,105,0.3)',
+                background: 'rgba(26, 23, 20,0.95)',
+                border: '1px solid rgba(198, 167, 105,0.3)',
                 color: 'var(--mint-light)',
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 600,
@@ -67,7 +67,7 @@ export default function Contact() {
                 <>
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint-dark)' }}
+                    style={{ background: 'rgba(198, 167, 105,0.12)', color: 'var(--mint-dark)' }}
                   >
                     <Icon name={c.icon} size={16} strokeWidth={1.5} />
                   </div>
@@ -128,7 +128,7 @@ function ContactForm() {
 
   if (state === 'sent') {
     return (
-      <div className="rounded-2xl p-6 mb-2" style={{ background: 'rgba(198,167,105,0.1)', border: '1px solid var(--border)' }}>
+      <div className="rounded-2xl p-6 mb-2" style={{ background: 'rgba(198, 167, 105,0.1)', border: '1px solid var(--border)' }}>
         <div className="flex items-center gap-2" style={{ color: 'var(--mint-dark)', fontWeight: 600 }}>
           <Icon name="check-circle" size={18} strokeWidth={2} />
           Thanks! We'll be in touch shortly.

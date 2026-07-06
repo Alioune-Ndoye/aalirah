@@ -47,7 +47,7 @@ export default function Loader() {
             aria-hidden="true"
           >
             <polygon points="50,2 98,87 2,87" fill="white" />
-            <polygon points="50,42 74,83 26,83" fill="#C6A769" />
+            <polygon points="50,42 74,83 26,83" fill="#c6a769" />
           </svg>
           <span
             style={{

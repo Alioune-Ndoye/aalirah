@@ -15,7 +15,7 @@ export default function WhyUs() {
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(198,167,105,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(198,167,105,0.05) 1px, transparent 1px)',
+            'linear-gradient(rgba(198, 167, 105,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(198, 167, 105,0.05) 1px, transparent 1px)',
           backgroundSize: '64px 64px',
         }}
       />
@@ -40,12 +40,12 @@ export default function WhyUs() {
             <Reveal key={r.n} delay={(i % 3) * 0.08}>
               <div
                 className="step-card h-full"
-                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(198,167,105,0.12)' }}
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(198, 167, 105,0.12)' }}
               >
-                <span className="step-num" style={{ color: 'rgba(198,167,105,0.10)' }}>
+                <span className="step-num" style={{ color: 'rgba(198, 167, 105,0.10)' }}>
                   {r.n}
                 </span>
-                <div className="step-icon" style={{ background: 'rgba(198,167,105,0.12)', color: 'var(--mint)' }}>
+                <div className="step-icon" style={{ background: 'rgba(198, 167, 105,0.12)', color: 'var(--mint)' }}>
                   <Icon name={r.icon} size={22} strokeWidth={1.6} />
                 </div>
                 <h3 className="step-title" style={{ color: '#fff' }}>

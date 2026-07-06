@@ -170,13 +170,13 @@ export default function About() {
                 <span
                   aria-hidden="true"
                   className="absolute -right-2 -bottom-6 select-none transition-transform duration-500 group-hover:scale-110"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '7rem', color: 'rgba(198,167,105,0.07)', lineHeight: 1 }}
+                  style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, fontSize: '7rem', color: 'rgba(198, 167, 105,0.07)', lineHeight: 1 }}
                 >
                   {v.n}
                 </span>
 
                 <div className="relative">
-                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2.5rem', color: 'rgba(198,167,105,0.45)', fontWeight: 300, marginBottom: 16 }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2.5rem', color: 'rgba(198, 167, 105,0.45)', fontWeight: 300, marginBottom: 16 }}>
                     {v.n}
                   </div>
                   <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 400, color: 'var(--forest)', marginBottom: 12 }}>
@@ -240,7 +240,7 @@ export default function About() {
                   <motion.span
                     key={town}
                     variants={{ hidden: { opacity: 0, scale: 0.85 }, show: { opacity: 1, scale: 1 } }}
-                    whileHover={{ y: -3, backgroundColor: 'rgba(198,167,105,0.16)' }}
+                    whileHover={{ y: -3, backgroundColor: 'rgba(198, 167, 105,0.16)' }}
                     className="rounded-full px-4 py-2"
                     style={{ background: '#fff', border: '1px solid var(--sand)', fontSize: '0.82rem', color: 'var(--forest)', fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600 }}
                   >

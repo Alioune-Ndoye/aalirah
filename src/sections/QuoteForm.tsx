@@ -60,7 +60,7 @@ export default function QuoteForm() {
           <div className="form-card p-7 md:p-9">
             {status === 'sent' ? (
               <div className="text-center py-10">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(198,167,105,0.15)', color: 'var(--mint-dark)' }}>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(198, 167, 105,0.15)', color: 'var(--mint-dark)' }}>
                   <Icon name="check-circle" size={32} strokeWidth={2} />
                 </div>
                 <h3 className="section-heading" style={{ fontSize: '1.8rem', marginBottom: 10 }}>
