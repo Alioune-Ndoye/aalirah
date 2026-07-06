@@ -8,41 +8,51 @@ import { useAuth } from '../lib/auth';
 import { fetchMyProperties, type Property } from '../lib/propertyApi';
 
 /* ──────────────────────────────────────────────────────────
-   Pricing engine config (ported 1:1 from PHP book.php)
+   Pricing engine — labor-true model.
+   Every price = realistic man-hours × $60/hr blended rate
+   (skilled labor + management + platform overhead). A 3,000 sq ft
+   6bd/3ba deep clean with appliance add-ons lands ~$1,200–$1,320
+   at 20–22 hours, matching real operational cost.
    ────────────────────────────────────────────────────────── */
+const HOURLY_RATE = 60;
 type Tier = { label: string; price: number; hours: number };
+const tier = (label: string, hours: number): Tier => ({ label, hours, price: hours * HOURLY_RATE });
 
 const sizeConfig: Record<string, Tier> = {
-  under1000: { label: 'Under 1,000 sq. ft.', price: 137.0, hours: 1.5 },
-  '1000to1500': { label: '1,001 - 1,500 sq. ft.', price: 167.0, hours: 2.0 },
-  '1500to2000': { label: '1,501 - 2,000 sq. ft.', price: 197.0, hours: 2.5 },
-  '2000to2500': { label: '2,001 - 2,500 sq. ft.', price: 227.0, hours: 3.0 },
-  '2500to3000': { label: '2,501 - 3,000 sq. ft.', price: 257.0, hours: 3.5 },
-  '3000to3500': { label: '3,001 - 3,500 sq. ft.', price: 287.0, hours: 4.0 },
-  '3500to4000': { label: '3,501 - 4,000 sq. ft.', price: 317.0, hours: 4.5 },
-  '4000to4500': { label: '4,001 - 4,500 sq. ft.', price: 347.0, hours: 5.0 },
-  '4500to5000': { label: '4,501 - 5,000 sq. ft.', price: 377.0, hours: 5.5 },
+  under1000: tier('Under 1,000 sq. ft.', 2.5),
+  '1000to1500': tier('1,001 - 1,500 sq. ft.', 3.0),
+  '1500to2000': tier('1,501 - 2,000 sq. ft.', 3.5),
+  '2000to2500': tier('2,001 - 2,500 sq. ft.', 4.25),
+  '2500to3000': tier('2,501 - 3,000 sq. ft.', 5.0),
+  '3000to3500': tier('3,001 - 3,500 sq. ft.', 6.0),
+  '3500to4000': tier('3,501 - 4,000 sq. ft.', 7.0),
+  '4000to4500': tier('4,001 - 4,500 sq. ft.', 8.0),
+  '4500to5000': tier('4,501 - 5,000 sq. ft.', 9.0),
 };
 const bedroomConfig: Record<string, Tier> = {
-  studio: { label: 'Studio', price: 0.0, hours: 0.0 },
-  '1bed': { label: '1 Bedroom', price: 15.0, hours: 0.5 },
-  '2bed': { label: '2 Bedrooms', price: 30.0, hours: 1.0 },
-  '3bed': { label: '3 Bedrooms', price: 45.0, hours: 1.5 },
-  '4bed': { label: '4 Bedrooms', price: 60.0, hours: 2.0 },
-  '5bed': { label: '5 Bedrooms', price: 75.0, hours: 2.5 },
-  '6bed': { label: '6 Bedrooms', price: 90.0, hours: 3.0 },
+  studio: tier('Studio', 0.0),
+  '1bed': tier('1 Bedroom', 0.5),
+  '2bed': tier('2 Bedrooms', 1.0),
+  '3bed': tier('3 Bedrooms', 1.5),
+  '4bed': tier('4 Bedrooms', 2.0),
+  '5bed': tier('5 Bedrooms', 2.5),
+  '6bed': tier('6 Bedrooms', 3.0),
 };
 const bathroomConfig: Record<string, Tier> = {
-  '1bath': { label: '1 Bathroom', price: 0.0, hours: 0.0 },
-  '1.5bath': { label: '1.5 Bathrooms', price: 15.0, hours: 0.25 },
-  '2bath': { label: '2 Bathrooms', price: 30.0, hours: 0.5 },
-  '2.5bath': { label: '2.5 Bathrooms', price: 45.0, hours: 0.75 },
-  '3bath': { label: '3 Bathrooms', price: 60.0, hours: 1.0 },
-  '3.5bath': { label: '3.5 Bathrooms', price: 75.0, hours: 1.25 },
-  '4bath': { label: '4 Bathrooms', price: 90.0, hours: 1.5 },
-  '4.5bath': { label: '4.5 Bathrooms', price: 105.0, hours: 1.75 },
-  '5bath': { label: '5 Bathrooms', price: 120.0, hours: 2.0 },
+  '1bath': tier('1 Bathroom', 0.75),
+  '1.5bath': tier('1.5 Bathrooms', 1.0),
+  '2bath': tier('2 Bathrooms', 1.5),
+  '2.5bath': tier('2.5 Bathrooms', 1.75),
+  '3bath': tier('3 Bathrooms', 2.25),
+  '3.5bath': tier('3.5 Bathrooms', 2.5),
+  '4bath': tier('4 Bathrooms', 3.0),
+  '4.5bath': tier('4.5 Bathrooms', 3.25),
+  '5bath': tier('5 Bathrooms', 3.75),
 };
+
+/** Deep cleaning scales with home size instead of a flat fee: +40% on the
+ *  base (size + bedrooms + bathrooms), in both price and hours. */
+const DEEP_MULTIPLIER = 1.4;
 
 type Freq = { id: string; top: string; sub: string; isSave: boolean; rate: number; fullName: string };
 const frequencies: Freq[] = [
@@ -53,30 +63,30 @@ const frequencies: Freq[] = [
 ];
 const freqLabel = (f: Freq) => (f.rate > 0 ? `${f.fullName} for ${Math.round(f.rate * 100)}% Off` : `${f.fullName} Cleaning`);
 
-type Extra = { id: string; label: string; price: number; hours: number; name: string; paths: string[]; recommended?: boolean };
+type Extra = { id: string; label: string; price: number; hours: number; name: string; paths: string[]; recommended?: boolean; pct?: number };
 const extrasList: Extra[] = [
-  { id: 'deep', label: 'Deep Cleaning', recommended: true, price: 50.0, hours: 0.5, name: 'Deep Cleaning', paths: ['M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z'] },
-  { id: 'moveInOut', label: 'Move-In/Out', price: 140.0, hours: 2.0, name: 'Move-In/Out Cleaning', paths: ['M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m10.5 4.5h1.5m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'] },
-  { id: 'petHair', label: 'Pet Hair Clean-Up', price: 30.0, hours: 0.5, name: 'Pet Hair Clean-Up', paths: ['M7.848 8.25l1.536.887M7.848 8.25a3 3 0 11-5.196-3 3 3 0 015.196 3zm1.536.887a2.165 2.165 0 011.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 11-5.196 3 3 3 0 015.196-3zm1.536-.887a2.165 2.165 0 001.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863l2.077-1.199m0-3.328a4.323 4.323 0 012.068-1.379l5.325-1.628a4.5 4.5 0 012.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.331 4.331 0 0010.607 12m3.736 0l7.794 4.499-.802.215a4.5 4.5 0 01-2.48-.043l-5.326-1.629a4.324 4.324 0 01-2.068-1.379M14.343 12l-2.882 1.664'] },
-  { id: 'baseboards', label: 'Clean Baseboards', price: 35.0, hours: 0.5, name: 'Clean Baseboards', paths: ['M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42'] },
+  { id: 'deep', label: 'Deep Cleaning', recommended: true, price: 0, hours: 0, pct: 0.4, name: 'Deep Cleaning', paths: ['M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z'] },
+  { id: 'moveInOut', label: 'Move-In/Out', price: 220.0, hours: 3.75, name: 'Move-In/Out Cleaning', paths: ['M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m10.5 4.5h1.5m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'] },
+  { id: 'petHair', label: 'Pet Hair Clean-Up', price: 45.0, hours: 0.75, name: 'Pet Hair Clean-Up', paths: ['M7.848 8.25l1.536.887M7.848 8.25a3 3 0 11-5.196-3 3 3 0 015.196 3zm1.536.887a2.165 2.165 0 011.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.199M7.848 15.75l1.536-.887m-1.536.887a3 3 0 11-5.196 3 3 3 0 015.196-3zm1.536-.887a2.165 2.165 0 001.083-1.838c.005-.352.054-.695.14-1.025m-1.223 2.863l2.077-1.199m0-3.328a4.323 4.323 0 012.068-1.379l5.325-1.628a4.5 4.5 0 012.48-.044l.803.215-7.794 4.5m-2.882-1.664A4.331 4.331 0 0010.607 12m3.736 0l7.794 4.499-.802.215a4.5 4.5 0 01-2.48-.043l-5.326-1.629a4.324 4.324 0 01-2.068-1.379M14.343 12l-2.882 1.664'] },
+  { id: 'baseboards', label: 'Clean Baseboards', price: 90.0, hours: 1.5, name: 'Clean Baseboards', paths: ['M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42'] },
   { id: 'laundry', label: 'Load(s) of Laundry', price: 30.0, hours: 0.5, name: 'Load(s) of Laundry', paths: ['M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99'] },
-  { id: 'dishes', label: 'Hand Wash Dishes', price: 20.0, hours: 0.5, name: 'Hand Wash Dishes', paths: ['M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.07 5.695a1.575 1.575 0 01-2.098 1.367l-1.942-.617a1.875 1.875 0 00-2.179.859l-.107.202c-.5.98-.169 2.185.793 2.75l7.045 4.007a1.875 1.875 0 002.212-.234l2.493-2.08a1.875 1.875 0 00.702-1.667l-.268-2.095a1.575 1.575 0 00-.634-1.13l-.107-1.34'] },
-  { id: 'balcony', label: 'Balcony', price: 30.0, hours: 0.5, name: 'Balcony', paths: ['M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h18'] },
-  { id: 'oven', label: 'Clean Inside Oven', price: 35.0, hours: 0.5, name: 'Clean Inside Oven', paths: ['M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z', 'M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.545 5.975 5.975 0 01-2.133-1.001A3.75 3.75 0 0012 18z'] },
-  { id: 'fridge', label: 'Clean Inside Fridge', price: 35.0, hours: 0.5, name: 'Clean Inside Fridge', paths: ['M20.25 7.5l-.625 12a1.5 1.5 0 01-1.5 1.5H5.875a1.5 1.5 0 01-1.5-1.5L3.75 7.5m16.5 0V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v1.5m16.5 0h-16.5M12 11.25v4.5'] },
-  { id: 'cabinets', label: 'Clean Inside Cabinets', price: 40.0, hours: 0.5, name: 'Clean Inside Cabinets', paths: ['M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z'] },
-  { id: 'windows', label: 'Interior Windows', price: 45.0, hours: 0.5, name: 'Clean Interior Windows', paths: ['M3 3h18v18H3V3zm9 0v18M3 12h18'] },
-  { id: 'walls', label: 'Interior Walls', price: 60.0, hours: 1.0, name: 'Interior Walls', paths: ['M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z'] },
-  { id: 'uv', label: 'UV Disinfection', price: 40.0, hours: 0.5, name: 'UV Disinfection', paths: ['M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z'] },
-  { id: 'organizing', label: 'Hour(s) of Organizing', price: 50.0, hours: 1.0, name: 'Hour(s) of Organizing', paths: ['M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z'] },
-  { id: 'sameDay', label: 'Same Day Service', price: 50.0, hours: 0.0, name: 'Same Day Service', paths: ['M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z'] },
+  { id: 'dishes', label: 'Hand Wash Dishes', price: 30.0, hours: 0.5, name: 'Hand Wash Dishes', paths: ['M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.07 5.695a1.575 1.575 0 01-2.098 1.367l-1.942-.617a1.875 1.875 0 00-2.179.859l-.107.202c-.5.98-.169 2.185.793 2.75l7.045 4.007a1.875 1.875 0 002.212-.234l2.493-2.08a1.875 1.875 0 00.702-1.667l-.268-2.095a1.575 1.575 0 00-.634-1.13l-.107-1.34'] },
+  { id: 'balcony', label: 'Balcony', price: 45.0, hours: 0.75, name: 'Balcony', paths: ['M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h18'] },
+  { id: 'oven', label: 'Clean Inside Oven', price: 45.0, hours: 0.75, name: 'Clean Inside Oven', paths: ['M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z', 'M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.545 5.975 5.975 0 01-2.133-1.001A3.75 3.75 0 0012 18z'] },
+  { id: 'fridge', label: 'Clean Inside Fridge', price: 45.0, hours: 0.75, name: 'Clean Inside Fridge', paths: ['M20.25 7.5l-.625 12a1.5 1.5 0 01-1.5 1.5H5.875a1.5 1.5 0 01-1.5-1.5L3.75 7.5m16.5 0V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v1.5m16.5 0h-16.5M12 11.25v4.5'] },
+  { id: 'cabinets', label: 'Clean Inside Cabinets', price: 75.0, hours: 1.25, name: 'Clean Inside Cabinets', paths: ['M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z'] },
+  { id: 'windows', label: 'Interior Windows', price: 90.0, hours: 1.5, name: 'Clean Interior Windows', paths: ['M3 3h18v18H3V3zm9 0v18M3 12h18'] },
+  { id: 'walls', label: 'Interior Walls', price: 90.0, hours: 1.5, name: 'Interior Walls', paths: ['M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z'] },
+  { id: 'uv', label: 'UV Disinfection', price: 45.0, hours: 0.5, name: 'UV Disinfection', paths: ['M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z'] },
+  { id: 'organizing', label: 'Hour(s) of Organizing', price: 60.0, hours: 1.0, name: 'Hour(s) of Organizing', paths: ['M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z'] },
+  { id: 'sameDay', label: 'Same Day Service', price: 75.0, hours: 0.0, name: 'Same Day Service', paths: ['M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z'] },
   { id: 'restocking', label: 'Restocking', price: 30.0, hours: 0.5, name: 'Restocking', paths: ['M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'] },
-  { id: 'silver', label: 'Silver Polishing', price: 45.0, hours: 0.5, name: 'Silver Polishing', paths: ['M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z'] },
+  { id: 'silver', label: 'Silver Polishing', price: 45.0, hours: 0.75, name: 'Silver Polishing', paths: ['M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z'] },
   { id: 'chandelier', label: 'Chandelier Cleaning', price: 60.0, hours: 0.5, name: 'Chandelier Cleaning', paths: ['M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.354a14.31 14.31 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18'] },
   { id: 'inspection', label: 'White-Glove Inspection', price: 40.0, hours: 0.25, name: 'White-Glove Inspection', paths: ['M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z'] },
 ];
 
-const TAX_RATE = 0.08875;
+const TAX_RATE = 0.0635; // CT sales tax
 
 const valueProps = [
   { icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Saves You Time', desc: 'We help you live smarter, giving you time to focus on what matters most.' },
@@ -135,6 +145,12 @@ export default function Book() {
   const calc = useMemo(() => {
     let subtotal = sizeConfig[size].price + bedroomConfig[bedrooms].price + bathroomConfig[bathrooms].price;
     let totalHours = sizeConfig[size].hours + bedroomConfig[bedrooms].hours + bathroomConfig[bathrooms].hours;
+    // Deep cleaning scales the whole base (price AND hours) — a flat fee can't
+    // reflect that a 3,500 sq ft deep clean takes hours more than a small one.
+    if (active.has('deep')) {
+      subtotal *= DEEP_MULTIPLIER;
+      totalHours *= DEEP_MULTIPLIER;
+    }
     for (const ex of extrasList) {
       if (active.has(ex.id)) {
         subtotal += ex.price;
@@ -235,7 +251,7 @@ export default function Book() {
       <Seo {...meta.book} />
 
       {/* ── Page Hero ──────────────────────────────────────── */}
-      <section style={{ background: 'var(--forest)', paddingTop: 144, paddingBottom: 52, borderBottom: '1px solid rgba(198,167,105,0.12)' }}>
+      <section style={{ background: 'var(--forest)', paddingTop: 144, paddingBottom: 52, borderBottom: '1px solid rgba(198, 167, 105,0.12)' }}>
         <div className="max-w-7xl mx-auto px-6 md:px-10">
           <div className="section-label mb-5">
             <span className="label-line" />Book Online
@@ -259,7 +275,7 @@ export default function Book() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Guarantee Bar */}
-          <div style={{ background: 'var(--forest)', border: '1px solid rgba(198,167,105,0.18)', borderRadius: 12, padding: '18px 24px', marginBottom: 40, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.18)', borderRadius: 12, padding: '18px 24px', marginBottom: 40, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,var(--mint),transparent)' }} />
             <p style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: 'italic', fontSize: '1.05rem', color: 'rgba(255,255,255,0.82)', lineHeight: 1.6, margin: 0 }}>
               It is our goal to offer you the best possible cleaning service available. If you're not happy with your cleaning, we will come back and give you a re-cleaning on the house! Any questions, call us at{' '}
@@ -282,12 +298,12 @@ export default function Book() {
                   </p>
 
                   {/* Move-In/Out Special Banner */}
-                  <div style={{ background: 'rgba(198,167,105,0.08)', border: '1px solid rgba(198,167,105,0.25)', borderRadius: 10, padding: '16px 20px', marginBottom: 36 }}>
+                  <div style={{ background: 'rgba(198, 167, 105,0.08)', border: '1px solid rgba(198, 167, 105,0.25)', borderRadius: 10, padding: '16px 20px', marginBottom: 36 }}>
                     <p style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.78rem', color: 'var(--forest)', lineHeight: 1.6, margin: 0 }}>
                       <strong style={{ fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--mint-dark)', display: 'block', marginBottom: 4 }}>
-                        Move In / Move Out Special — Only $140 extra
+                        Move In / Move Out Special — Only $220 extra
                       </strong>
-                      Includes deep cleaning, inside fridge, inside oven &amp; inside cabinets. ($200 if extras booked separately.)
+                      Includes inside fridge, inside oven, inside cabinets &amp; baseboards. ($255 if extras booked separately.)
                     </p>
                   </div>
 
@@ -368,7 +384,7 @@ export default function Book() {
                                 border: `1.5px solid ${on ? 'var(--forest)' : 'var(--border)'}`,
                                 borderRadius: 12, padding: '16px 12px', textAlign: 'center',
                                 background: on ? 'var(--forest)' : '#fff', cursor: 'pointer', transition: 'all .25s',
-                                boxShadow: on ? '0 4px 20px rgba(26,23,20,0.2)' : 'none',
+                                boxShadow: on ? '0 4px 20px rgba(26, 23, 20,0.2)' : 'none',
                               }}
                             >
                               <span style={{ display: 'block', fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.82rem', fontWeight: 700, color: on ? '#fff' : 'var(--forest)' }}>{f.top}</span>
@@ -436,7 +452,7 @@ export default function Book() {
                                 border: `1.5px solid ${on ? 'var(--mint)' : 'var(--border)'}`,
                                 borderRadius: 14, padding: '16px 12px', display: 'flex', flexDirection: 'column',
                                 alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-                                background: on ? 'rgba(198,167,105,0.08)' : '#fff', cursor: 'pointer', transition: 'all .22s',
+                                background: on ? 'rgba(198, 167, 105,0.08)' : '#fff', cursor: 'pointer', transition: 'all .22s',
                                 boxShadow: on ? '0 0 0 1px var(--mint)' : 'none',
                               }}
                             >
@@ -581,9 +597,9 @@ export default function Book() {
               </div>
             ) : (
               <div className="lg:col-span-2">
-                <div style={{ background: 'var(--forest)', border: '1px solid rgba(198,167,105,0.18)', borderRadius: 24, padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.18)', borderRadius: 24, padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,var(--mint),var(--mint-light))' }} />
-                  <div style={{ width: 64, height: 64, background: 'rgba(198,167,105,0.12)', border: '1px solid rgba(198,167,105,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', color: 'var(--mint)' }}>
+                  <div style={{ width: 64, height: 64, background: 'rgba(198, 167, 105,0.12)', border: '1px solid rgba(198, 167, 105,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', color: 'var(--mint)' }}>
                     <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                   </div>
                   <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '2.4rem', fontWeight: 400, color: '#fff', marginBottom: 16 }}>Thank you for booking!</h2>
@@ -599,7 +615,7 @@ export default function Book() {
             <div className="space-y-6">
 
               {/* Booking Summary */}
-              <div style={{ background: 'var(--forest)', border: '1px solid rgba(198,167,105,0.15)', borderRadius: 20, padding: 28, position: 'sticky', top: 88, overflow: 'hidden' }}>
+              <div style={{ background: 'var(--forest)', border: '1px solid rgba(198, 167, 105,0.15)', borderRadius: 20, padding: 28, position: 'sticky', top: 88, overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,var(--mint),transparent)' }} />
                 <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 20 }}>Booking Summary</div>
 
@@ -621,24 +637,24 @@ export default function Book() {
 
                 {/* Extras list */}
                 {activeExtras.length > 0 && (
-                  <div style={{ borderTop: '1px solid rgba(198,167,105,0.12)', paddingTop: 14, marginBottom: 14 }}>
+                  <div style={{ borderTop: '1px solid rgba(198, 167, 105,0.12)', paddingTop: 14, marginBottom: 14 }}>
                     <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.30)', marginBottom: 8 }}>Extras</div>
                     {activeExtras.map((ex) => (
                       <div key={ex.id} style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.75rem', color: 'rgba(255,255,255,0.65)', padding: '3px 0' }}>
-                        <span>+ {ex.name}</span><span style={{ color: 'var(--mint)' }}>+{money(ex.price)}</span>
+                        <span>+ {ex.name}</span><span style={{ color: 'var(--mint)' }}>{ex.pct ? `+${Math.round(ex.pct * 100)}%` : `+${money(ex.price)}`}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {/* Invoice */}
-                <div style={{ borderTop: '1px solid rgba(198,167,105,0.12)', paddingTop: 16 }}>
+                <div style={{ borderTop: '1px solid rgba(198, 167, 105,0.12)', paddingTop: 16 }}>
                   <InvoiceRow label="Subtotal" value={money(calc.subtotal)} />
                   {calc.discountVal > 0 && <InvoiceRow label="Frequency Discount" value={'-' + money(calc.discountVal)} mint />}
                   {calc.promoVal > 0 && <InvoiceRow label="Promo Code" value={'-' + money(calc.promoVal)} mint />}
                   {tip > 0 && <InvoiceRow label="Tip" value={money(tip)} />}
                   <InvoiceRow label="Sales Tax (8.875%)" value={money(calc.tax)} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderTop: '1px solid rgba(198,167,105,0.18)', paddingTop: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderTop: '1px solid rgba(198, 167, 105,0.18)', paddingTop: 14 }}>
                     <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)' }}>Total</span>
                     <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: '2.4rem', fontWeight: 800, color: 'var(--mint)', lineHeight: 1 }}>{money(calc.total)}</span>
                   </div>
@@ -696,7 +712,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function SummaryRow({ d, children }: { d: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-      <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(198,167,105,0.1)', border: '1px solid rgba(198,167,105,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--mint)' }}>
+      <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(198, 167, 105,0.1)', border: '1px solid rgba(198, 167, 105,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--mint)' }}>
         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d={d} /></svg>
       </div>
       <div>{children}</div>

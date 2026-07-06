@@ -317,7 +317,7 @@ export type Faq = { q: string; a: string };
 export const faqs: Faq[] = [
   {
     q: 'How much does professional house cleaning cost in West Hartford, CT?',
-    a: 'Our residential deep cleaning starts from $160 for spaces under 1,000 sq ft. Pricing varies by space size, cleaning type, and frequency. Get a free instant estimate online in under 60 seconds — no commitment required.',
+    a: 'Standard cleans start around $195 for spaces under 1,000 sq ft, and deep cleans from about $275. Pricing reflects the real hours your home needs — it scales with size, condition, and add-ons. Get a free instant estimate online in under 60 seconds — no commitment required.',
   },
   {
     q: 'Are your cleaning products eco-friendly and safe for children and pets?',
@@ -343,15 +343,15 @@ export const faqs: Faq[] = [
 
 /* Booking: residential pricing is driven by bedroom count (not fixed buckets).
    Anchored so 3 bedrooms = $240 to match the legacy rate. Tweak these to reprice. */
-export const bedroomRate = { studio: 130, base: 150, perBedroom: 45, max: 8 };
+export const bedroomRate = { studio: 275, base: 315, perBedroom: 60, max: 8 };
 
 /** Residential starting rates by home size — mirrors the booking calculator's
     square-footage tiers so the Pricing page and the booking tool agree. */
 export const residentialTiers = [
-  { label: 'Under 1,000 sq ft', price: 137 },
-  { label: '1,000 – 1,500 sq ft', price: 167 },
-  { label: '1,500 – 2,000 sq ft', price: 197 },
-  { label: '2,000 – 2,500 sq ft', price: 227 },
+  { label: 'Under 1,000 sq ft', price: 150 },
+  { label: '1,000 – 1,500 sq ft', price: 180 },
+  { label: '1,500 – 2,000 sq ft', price: 210 },
+  { label: '2,000 – 2,500 sq ft', price: 255 },
 ];
 
 /** Starting price for a residential deep clean by bedroom count (0 = studio). */
@@ -371,13 +371,14 @@ export function typicalSqft(beds: number, unit: 'ft' | 'm' = 'ft') {
   return unit === 'm' ? Math.round((ft * 0.092903) / 5) * 5 : ft;
 }
 
+// Mirrors the booking calculator's labor-true rates (hours × $60/hr).
 export const addons = [
-  { id: 'fridge', label: 'Inside Fridge', price: 30 },
-  { id: 'oven', label: 'Inside Oven', price: 30 },
-  { id: 'windows', label: 'Interior Windows', price: 40 },
-  { id: 'laundry', label: 'Laundry & Linens', price: 25 },
-  { id: 'cabinets', label: 'Inside Cabinets', price: 35 },
-  { id: 'pets', label: 'Pet Hair Detail', price: 20 },
+  { id: 'fridge', label: 'Inside Fridge', price: 45 },
+  { id: 'oven', label: 'Inside Oven', price: 45 },
+  { id: 'windows', label: 'Interior Windows', price: 90 },
+  { id: 'laundry', label: 'Laundry & Linens', price: 30 },
+  { id: 'cabinets', label: 'Inside Cabinets', price: 75 },
+  { id: 'pets', label: 'Pet Hair Detail', price: 45 },
   { id: 'restocking', label: 'Restocking', price: 30 },
   { id: 'silver', label: 'Silver Polishing', price: 45 },
   { id: 'chandelier', label: 'Chandelier Cleaning', price: 60 },
@@ -385,16 +386,19 @@ export const addons = [
 ];
 
 /** Starting price by service. Residential is driven by bedroom count (see bedroomPrice). */
+// Market-realistic starting prices for the Hartford-area (labor-true model —
+// low enough to win work, high enough that owner, workers, and clients all
+// come out whole).
 export const serviceBasePrice: Record<string, number> = {
   'residential-deep-clean': 0,
-  'office-commercial': 220,
-  'move-in-move-out': 280,
-  'post-construction': 320,
-  'luxury-estate-care': 420,
-  'event-preparation': 260,
-  'recurring-cleaning': 130,
-  'apartment-cleaning': 120,
-  'airbnb-cleaning': 110,
+  'office-commercial': 260,
+  'move-in-move-out': 395,
+  'post-construction': 450,
+  'luxury-estate-care': 520,
+  'event-preparation': 300,
+  'recurring-cleaning': 156,
+  'apartment-cleaning': 175,
+  'airbnb-cleaning': 150,
 };
 
 export type Special = { icon: IconName; title: string; detail: string; terms: string; badge?: string };
