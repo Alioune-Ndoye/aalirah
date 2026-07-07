@@ -544,7 +544,7 @@ export default function Book() {
 
                     {/* 11 — Payment */}
                     <FormSection num={11} title="Payment">
-                      <div style={{ border: '1.5px solid var(--border)', borderRadius: 12, padding: 24, background: 'var(--surface-alt)', maxWidth: 480 }}>
+                      <div style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 24, background: 'var(--surface-alt)', maxWidth: 480 }}>
                         <div style={{ marginBottom: 16 }}>
                           <label className="form-label">Card Number</label>
                           <div style={{ position: 'relative' }}>
@@ -665,7 +665,7 @@ export default function Book() {
               </div>
 
               {/* Value Props */}
-              <div style={{ background: '#fff', border: '1.5px solid var(--border)', borderRadius: 14, padding: 24 }}>
+              <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
                 {valueProps.map((p, i) => {
                   const last = i === valueProps.length - 1;
                   return (

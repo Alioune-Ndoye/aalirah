@@ -892,7 +892,7 @@ img {
 }
 textarea.form-input {
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 14px 16px;
   min-height: 110px;
   resize: none;
