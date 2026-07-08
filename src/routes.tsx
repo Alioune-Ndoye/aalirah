@@ -12,6 +12,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Auth from './pages/Auth';
 import Account from './pages/Account';
 import Crew from './pages/Crew';
+import RouteError from './components/RouteError';
 import HowItWorks from './pages/HowItWorks';
 import Guarantee from './pages/Guarantee';
 import Specials from './pages/Specials';
@@ -25,6 +26,9 @@ export const routes: RouteRecord[] = [
   {
     path: '/',
     element: <Layout />,
+    // Loader/navigation failures (e.g. a stale tab fetching files replaced by
+    // a newer deploy) land here instead of react-router's raw error dump.
+    errorElement: <RouteError />,
     children: [
       { index: true, element: <Home /> },
       { path: 'services', element: <Services /> },
