@@ -15,8 +15,10 @@ import {
   createCleaner,
   updateCleaner,
   assignCleaner,
+  updateBookingMeta,
   type AdminCleaner,
   type DispatchStatus,
+  type BookingPhoto,
   listCustomers,
   getCustomer,
   updateCustomer,
@@ -158,6 +160,13 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     }
   };
 
+  const setMeta = async (bookingId: string, patch: { paymentStatus?: 'unpaid' | 'paid' | 'refunded'; photos?: BookingPhoto[] }) => {
+    const ok = await updateBookingMeta(token, bookingId, patch);
+    if (ok) {
+      setBookings((prev) => prev.map((b) => (b._id === bookingId ? { ...b, ...patch } : b)));
+    }
+  };
+
   const pipeline = bookings
     .filter((b) => b.status !== 'cancelled' && b.status !== 'completed')
     .reduce((sum, b) => sum + (b.estimatedTotal || 0), 0);
@@ -225,7 +234,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           ) : (
             <div className="space-y-3">
               {bookings.map((b) => (
-                <BookingCard key={b._id} b={b} onStatus={changeStatus} cleaners={cleaners} onAssign={assign} />
+                <BookingCard key={b._id} b={b} onStatus={changeStatus} cleaners={cleaners} onAssign={assign} onMeta={setMeta} />
               ))}
             </div>
           )}
@@ -449,16 +458,18 @@ const DISPATCH_LABEL: Record<DispatchStatus, string> = {
   done: 'Done ✓',
 };
 
-function BookingCard({ b, onStatus, cleaners, onAssign }: {
+function BookingCard({ b, onStatus, cleaners, onAssign, onMeta }: {
   b: Booking;
   onStatus: (id: string, s: BookingStatus) => void;
   cleaners: AdminCleaner[];
   onAssign: (bookingId: string, cleanerId: string) => void;
+  onMeta: (bookingId: string, patch: { paymentStatus?: 'unpaid' | 'paid' | 'refunded'; photos?: BookingPhoto[] }) => void;
 }) {
   const addr = [b.street, b.apt, b.city, b.state, b.zip].filter(Boolean).join(', ');
   const dispatch: DispatchStatus = b.dispatch || 'none';
   const assignedId = typeof b.cleanerId === 'object' && b.cleanerId ? b.cleanerId._id : (b.cleanerId as string) || '';
   const activeCleaners = cleaners.filter((c) => c.status === 'active');
+  const [showPhotos, setShowPhotos] = useState(false);
   return (
     <div style={cardStyle}>
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -518,8 +529,86 @@ function BookingCard({ b, onStatus, cleaners, onAssign }: {
               </div>
             )}
           </div>
+
+          {/* Payment status */}
+          <div style={{ marginTop: 8 }}>
+            <select
+              value={b.paymentStatus || 'unpaid'}
+              onChange={(e) => onMeta(b._id, { paymentStatus: e.target.value as 'unpaid' | 'paid' | 'refunded' })}
+              style={{
+                padding: '6px 10px', borderRadius: 8, fontSize: '0.78rem', background: '#fff', fontWeight: 600,
+                border: `1px solid ${b.paymentStatus === 'paid' ? '#16a34a' : 'var(--border)'}`,
+                color: b.paymentStatus === 'paid' ? '#16a34a' : 'var(--text-muted)', maxWidth: 160,
+              }}
+            >
+              <option value="unpaid">Unpaid</option>
+              <option value="paid">Paid ✓</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+          <button
+            onClick={() => setShowPhotos((s) => !s)}
+            style={{ background: 'none', border: 'none', color: 'var(--mint-dark)', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', marginTop: 6, padding: 0 }}
+          >
+            {showPhotos ? 'Hide photos' : `Photos (${b.photos?.length || 0})`}
+          </button>
         </div>
       </div>
+
+      {showPhotos && <PhotosEditor photos={b.photos || []} onChange={(photos) => onMeta(b._id, { photos })} />}
+    </div>
+  );
+}
+
+/** Compact before/after photo manager for a booking (URLs until uploads land). */
+function PhotosEditor({ photos, onChange }: { photos: BookingPhoto[]; onChange: (photos: BookingPhoto[]) => void }) {
+  const [url, setUrl] = useState('');
+  const [kind, setKind] = useState<'before' | 'after'>('before');
+
+  const add = () => {
+    const u = url.trim();
+    if (!u.startsWith('https://')) return;
+    onChange([...photos, { url: u, kind }]);
+    setUrl('');
+  };
+
+  return (
+    <div style={{ borderTop: '1px solid var(--border)', marginTop: 12, paddingTop: 12 }}>
+      {photos.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {photos.map((p, i) => (
+            <div key={i} style={{ position: 'relative', width: 76, height: 56, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
+              <img src={p.url} alt={p.kind} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <span style={{ position: 'absolute', bottom: 2, left: 2, fontSize: '0.55rem', fontWeight: 700, textTransform: 'uppercase', color: '#fff', background: p.kind === 'before' ? 'rgba(26,23,20,0.8)' : 'rgba(22,163,74,0.85)', borderRadius: 4, padding: '1px 4px' }}>{p.kind}</span>
+              <button
+                onClick={() => onChange(photos.filter((_, j) => j !== i))}
+                aria-label="Remove photo"
+                style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.6rem', cursor: 'pointer', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https:// photo URL"
+          style={{ ...adminInput, flex: 1, minWidth: 220 }}
+        />
+        <select value={kind} onChange={(e) => setKind(e.target.value as 'before' | 'after')} style={adminInput}>
+          <option value="before">Before</option>
+          <option value="after">After</option>
+        </select>
+        <button onClick={add} className="btn-ghost" style={{ color: 'var(--forest)', borderColor: 'var(--border)', padding: '8px 16px', fontSize: '0.78rem', cursor: 'pointer' }}>
+          Add
+        </button>
+      </div>
+      <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 6 }}>
+        Customers see these on this booking in their portal, labeled before/after.
+      </p>
     </div>
   );
 }

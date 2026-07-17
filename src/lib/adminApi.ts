@@ -31,7 +31,25 @@ export type Booking = {
   createdAt: string;
   cleanerId?: string | { _id: string; firstName: string };
   dispatch?: DispatchStatus;
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
+  photos?: BookingPhoto[];
 };
+
+export type BookingPhoto = { url: string; kind: 'before' | 'after' };
+
+/** Admin: set payment status and/or the before/after photo list on a booking. */
+export async function updateBookingMeta(
+  token: string,
+  id: string,
+  patch: { paymentStatus?: 'unpaid' | 'paid' | 'refunded'; photos?: BookingPhoto[] }
+): Promise<boolean> {
+  const res = await fetch(`${API_URL}/api/bookings/${id}/meta`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...auth(token) },
+    body: JSON.stringify(patch),
+  });
+  return res.ok;
+}
 
 export type PendingReview = {
   id: string;

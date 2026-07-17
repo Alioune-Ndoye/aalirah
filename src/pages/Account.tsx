@@ -5,6 +5,7 @@ import Icon from '../components/Icon';
 import type { IconName } from '../components/Icon';
 import { useAuth, fetchMyBookings } from '../lib/auth';
 import { fetchMyProperties, createProperty, updateProperty, type Property } from '../lib/propertyApi';
+import { startCheckout } from '../lib/paymentApi';
 import { site } from '../lib/site';
 
 type Booking = {
@@ -22,6 +23,8 @@ type Booking = {
   dispatch?: 'none' | 'offered' | 'accepted' | 'declined' | 'on_the_way' | 'in_progress' | 'done';
   cleanerId?: { firstName?: string } | string | null;
   propertyId?: string | null;
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
+  photos?: { url: string; kind: 'before' | 'after' }[];
 };
 
 const TIER_LABEL: Record<string, string> = { standard: 'Standard', silver: 'Silver Member', gold: 'Gold Member' };
@@ -31,6 +34,7 @@ export default function Account() {
   const { customer, loading, logout, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !customer) navigate('/login', { replace: true });
@@ -86,6 +90,18 @@ export default function Account() {
             <button onClick={() => { logout(); navigate('/'); }} className="btn-ghost" style={{ color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.25)' }}>
               Log out
             </button>
+            <button
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Account settings"
+              title="Settings"
+              style={{
+                width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
+                color: 'var(--mint)', cursor: 'pointer', flexShrink: 0,
+              }}
+            >
+              <Icon name="gear" size={20} strokeWidth={1.6} />
+            </button>
           </div>
         </div>
       </section>
@@ -121,8 +137,45 @@ export default function Account() {
         </div>
       </section>
 
-      {/* Profile */}
-      <ProfileSection updateProfile={updateProfile} customer={customer} />
+      {/* Settings slide-over — opened from the gear icon (top right) */}
+      {settingsOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Account settings"
+          onClick={() => setSettingsOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 95, background: 'rgba(14, 12, 10, 0.5)',
+            backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'flex-end',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 'min(560px, 100%)', height: '100%', overflowY: 'auto',
+              background: 'var(--ivory)', borderLeft: '1px solid var(--border)',
+              padding: 'clamp(20px, 4vw, 32px)',
+            }}
+          >
+            <div className="flex items-center justify-between" style={{ marginBottom: 18 }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.6rem', color: 'var(--forest)' }}>
+                Settings
+              </h2>
+              <button
+                onClick={() => setSettingsOpen(false)}
+                aria-label="Close settings"
+                style={{
+                  width: 36, height: 36, borderRadius: '50%', border: '1px solid var(--border)',
+                  background: '#fff', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <ProfileSection updateProfile={updateProfile} customer={customer} inPanel />
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -153,9 +206,29 @@ function crewStatus(b: Booking): { text: string; color: string } | null {
 
 function BookingRow({ b }: { b: Booking }) {
   const crew = crewStatus(b);
+  const [payMsg, setPayMsg] = useState<string | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [lightbox, setLightbox] = useState<{ url: string; kind: string } | null>(null);
+
+  const canPay =
+    (b.paymentStatus ?? 'unpaid') === 'unpaid' && (b.estimatedTotal || 0) > 0 && b.status !== 'cancelled';
+
+  const pay = async () => {
+    if (paying) return;
+    setPaying(true);
+    setPayMsg(null);
+    const res = await startCheckout(b._id);
+    setPaying(false);
+    if (res.ok) window.location.href = res.url; // Stripe Checkout (once connected)
+    else setPayMsg(res.error);
+  };
+
+  const befores = (b.photos || []).filter((p) => p.kind === 'before');
+  const afters = (b.photos || []).filter((p) => p.kind === 'after');
+
   return (
     <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 16 }} className="flex flex-wrap items-center justify-between gap-3">
-      <div>
+      <div style={{ minWidth: 0 }}>
         <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>
           {b.frequency || 'Cleaning'} · {b.size || ''}
         </div>
@@ -168,10 +241,64 @@ function BookingRow({ b }: { b: Booking }) {
             {crew.text}
           </div>
         )}
+
+        {/* Before / after photos */}
+        {(befores.length > 0 || afters.length > 0) && (
+          <div className="flex flex-wrap gap-2" style={{ marginTop: 10 }}>
+            {[...befores, ...afters].map((p, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setLightbox(p)}
+                aria-label={`View ${p.kind} photo`}
+                style={{ position: 'relative', width: 72, height: 54, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)', padding: 0, cursor: 'zoom-in', background: 'var(--cream)' }}
+              >
+                <img src={p.url} alt={`${p.kind} photo`} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <span style={{ position: 'absolute', bottom: 3, left: 3, fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', background: p.kind === 'before' ? 'rgba(26,23,20,0.8)' : 'rgba(22,163,74,0.85)', borderRadius: 4, padding: '1px 5px' }}>
+                  {p.kind}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {payMsg && <p style={{ fontSize: '0.8rem', color: 'var(--mint-dark)', marginTop: 8, maxWidth: 380 }}>{payMsg}</p>}
+
+        {/* Lightbox */}
+        {lightbox && (
+          <div
+            role="dialog"
+            aria-label={`${lightbox.kind} photo`}
+            onClick={() => setLightbox(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'rgba(10,10,12,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, cursor: 'zoom-out' }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <img src={lightbox.url} alt={`${lightbox.kind} photo enlarged`} style={{ maxWidth: '92vw', maxHeight: '82vh', borderRadius: 10 }} />
+              <div style={{ color: '#fff', fontFamily: "'Space Grotesk',sans-serif", fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', marginTop: 12 }}>
+                {lightbox.kind} · tap anywhere to close
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="text-right">
+      <div className="text-right flex-shrink-0">
         <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: 'var(--forest)' }}>${(b.estimatedTotal || 0).toFixed(0)}</div>
-        <span style={{ fontSize: '0.7rem', textTransform: 'capitalize', color: 'var(--mint-dark)', fontWeight: 600 }}>{b.status}</span>
+        <div style={{ fontSize: '0.7rem', textTransform: 'capitalize', color: 'var(--mint-dark)', fontWeight: 600 }}>{b.status}</div>
+        {b.paymentStatus === 'paid' && (
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#16a34a', marginTop: 4 }}>Paid ✓</div>
+        )}
+        {b.paymentStatus === 'refunded' && (
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', marginTop: 4 }}>Refunded</div>
+        )}
+        {canPay && (
+          <button
+            onClick={pay}
+            disabled={paying}
+            className="btn-primary"
+            style={{ padding: '8px 18px', fontSize: '0.7rem', marginTop: 8, opacity: paying ? 0.6 : 1 }}
+          >
+            {paying ? 'One moment…' : `Pay $${(b.estimatedTotal || 0).toFixed(0)}`}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -312,7 +439,7 @@ const pInput: React.CSSProperties = {
   color: 'var(--forest)', fontSize: '0.9rem', outline: 'none',
 };
 
-function ProfileSection({ customer, updateProfile }: { customer: ReturnType<typeof useAuth>['customer']; updateProfile: ReturnType<typeof useAuth>['updateProfile'] }) {
+function ProfileSection({ customer, updateProfile, inPanel = false }: { customer: ReturnType<typeof useAuth>['customer']; updateProfile: ReturnType<typeof useAuth>['updateProfile']; inPanel?: boolean }) {
   const c = customer!;
   const [form, setForm] = useState({
     firstName: c.firstName, lastName: c.lastName, phone: c.phone,
@@ -337,10 +464,22 @@ function ProfileSection({ customer, updateProfile }: { customer: ReturnType<type
     else setMsg({ text: res.error, ok: false });
   };
 
+  // In the settings panel the overlay provides its own chrome; standalone it
+  // keeps the original full-width section (used nowhere else at the moment).
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
+    inPanel ? (
+      <>{children}</>
+    ) : (
+      <section className="bg-ivory py-14">
+        <div className="wrap" style={{ maxWidth: 720 }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.8rem', color: 'var(--forest)', marginBottom: 16 }}>Profile & settings</h2>
+          {children}
+        </div>
+      </section>
+    );
+
   return (
-    <section className="bg-ivory py-14">
-      <div className="wrap" style={{ maxWidth: 720 }}>
-        <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '1.8rem', color: 'var(--forest)', marginBottom: 16 }}>Profile & settings</h2>
+    <Wrapper>
         <form onSubmit={save} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: 24 }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
             <input value={form.firstName} onChange={set('firstName')} placeholder="First name" style={field} />
@@ -367,7 +506,6 @@ function ProfileSection({ customer, updateProfile }: { customer: ReturnType<type
             {busy ? 'Saving…' : 'Save changes'}
           </button>
         </form>
-      </div>
-    </section>
+    </Wrapper>
   );
 }
