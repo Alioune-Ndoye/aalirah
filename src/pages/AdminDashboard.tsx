@@ -20,6 +20,7 @@ import {
   type DispatchStatus,
   type BookingPhoto,
   listCustomers,
+  approveCustomer,
   getCustomer,
   updateCustomer,
   type Booking,
@@ -364,9 +365,29 @@ function CustomersTab({ token }: { token: string }) {
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{selected.email} · #{selected.accountNumber}</div>
               </div>
-              <span style={{ fontSize: '0.72rem', padding: '4px 10px', borderRadius: 14, background: selected.status === 'active' ? 'rgba(22,163,74,0.12)' : 'rgba(192,57,43,0.12)', color: selected.status === 'active' ? '#16a34a' : '#c0392b' }}>
-                {selected.status}
-              </span>
+              <div className="flex items-center gap-2">
+                {selected.verified === false && (
+                  <button
+                    onClick={async () => {
+                      const next = await approveCustomer(token, selected.id);
+                      if (next) {
+                        setSelected(next);
+                        setList((prev) => prev.map((c) => (c.id === next.id ? next : c)));
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                      background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: '0.78rem',
+                      fontFamily: "'Space Grotesk',sans-serif",
+                    }}
+                  >
+                    ✓ Approve account
+                  </button>
+                )}
+                <span style={{ fontSize: '0.72rem', padding: '4px 10px', borderRadius: 14, background: selected.verified === false ? 'rgba(184,134,11,0.12)' : selected.status === 'active' ? 'rgba(22,163,74,0.12)' : 'rgba(192,57,43,0.12)', color: selected.verified === false ? '#b8860b' : selected.status === 'active' ? '#16a34a' : '#c0392b' }}>
+                  {selected.verified === false ? 'pending approval' : selected.status}
+                </span>
+              </div>
             </div>
 
             {/* Loyalty controls */}

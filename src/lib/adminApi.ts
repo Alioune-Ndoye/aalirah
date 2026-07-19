@@ -133,6 +133,16 @@ export type AdminCustomer = {
   createdAt: string;
 };
 
+/** Activate a pending account without the SMS access code (owner fallback). */
+export async function approveCustomer(token: string, id: string): Promise<AdminCustomer | null> {
+  const res = await fetch(`${API_URL}/api/admin/customers/${id}/approve`, {
+    method: 'POST',
+    headers: auth(token),
+  });
+  if (!res.ok) return null;
+  return (await res.json()).customer || null;
+}
+
 export async function listCustomers(token: string, q = ''): Promise<AdminCustomer[]> {
   const res = await fetch(`${API_URL}/api/admin/customers${q ? `?q=${encodeURIComponent(q)}` : ''}`, { headers: auth(token) });
   if (!res.ok) return [];
